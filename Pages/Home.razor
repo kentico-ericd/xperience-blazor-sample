@@ -1,0 +1,21 @@
+@page "/"
+@using BlazorApp.Components.Carousel
+@using BlazorApp.Components.ProductCard
+@using BlazorApp.Services
+@using Kentico.Content.Web.Mvc
+@inject IPageRetriever pageRetriever
+@inject IPageUrlRetriever pageUrlRetriever
+@inject IProductService productService
+
+<Carousel />
+
+<section class="py-5 container-fluid row justify-content-center">
+    @foreach (var product in productService.GetFeaturedProducts(6))
+    {
+        <ProductCard Product=product />
+    }
+</section>
+
+@code {
+
+}

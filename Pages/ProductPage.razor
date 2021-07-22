@@ -1,0 +1,19 @@
+@page "/Store/{Alias}"
+@using CMS.DocumentEngine
+@using Kentico.Content.Web.Mvc
+@inject IPageRetriever pageRetriever
+
+<h1>@Node.DocumentName (@Node.NodeSKUID)</h1>
+
+@code {
+    [Parameter]
+    public string Alias { get; set; }
+
+    public TreeNode Node {
+        get {
+            return pageRetriever.Retrieve<TreeNode>(query => query
+                                .WhereEquals("NodeAlias", Alias))
+                                .FirstOrDefault();
+        }
+    }
+}
