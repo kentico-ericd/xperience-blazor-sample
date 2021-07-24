@@ -4,35 +4,50 @@ using CMS.Base;
 using CMS.DataEngine;
 using CMS.DocumentEngine.Types.Blazor;
 using CMS.Ecommerce;
+using CMS.Helpers;
+using Kentico.Content.Web.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
 public class ProductService : IProductService
 {
-    private ISiteService siteService;
+    private readonly ISiteService siteService;
+    private readonly ICalculationService calculationService;
+    private readonly IConfiguration config;
 
-    public ProductService(ISiteService siteService) {
+    public ProductService(ISiteService siteService, ICalculationService calculationService, IConfiguration config)
+    {
         this.siteService = siteService;
+        this.calculationService = calculationService;
+        this.config = config;
     }
     public ProductViewModel GetViewModel(Product product)
     {
-        var categories = SKUOptionCategoryInfo.Provider.Get()
-            .WhereEquals("SKUID", product.SKU.SKUID);
-        var SKU = SKUInfo.Provider.Get(product.SKU.SKUID);
-
-        var variants = GetVariants(product.SKU.SKUID);
-        var accessoryOptions = GetAccessoryOptions(product.SKU.SKUID);
-        var textOptions = GetTextOptions(product.SKU.SKUID);
-        var nonVariantAttributeOptions = GetNonVariantAttributeOptions(product.SKU.SKUID);
+        var dimensions = config.GetValue<int>("AppSettings:CardImageDimensions");
+        var image = string.IsNullOrEmpty(product.SKU.SKUImagePath) ? "" :
+            URLHelper.ResolveUrl(
+                new FileUrl(product.SKU.SKUImagePath, true)
+                    .WithSizeConstraint(SizeConstraint.Size(dimensions, dimensions))
+                    .RelativePath);
+        var status = product.SKUProduct.PublicStatus == null ? "" :
+            product.SKUProduct.PublicStatus.PublicStatusDisplayName;
+        var icon = string.IsNullOrEmpty(product.CardIconClass) ?
+            config.GetValue<string>("AppSettings:DefaultCardIcon") : product.CardIconClass;
 
         return new ProductViewModel
         {
             Product = product,
-            AccessoryOptions = accessoryOptions,
-            TextOptions = textOptions,
-            NonVariantAttributeOptions = nonVariantAttributeOptions,
-            Variants = variants
+            Image = image,
+            StatusName = status,
+            IconClass = icon,
+            Prices = calculationService.CalculatePrice(product.SKU),
+            Available = !product.SKU.SKUSellOnlyAvailable || product.SKU.SKUAvailableItems > 0,
+            AccessoryOptions = GetAccessoryOptions(product.SKU.SKUID),
+            TextOptions = GetTextOptions(product.SKU.SKUID),
+            NonVariantAttributeOptions = GetNonVariantAttributeOptions(product.SKU.SKUID),
+            Variants = GetVariants(product.SKU.SKUID)
         };
     }
 
@@ -73,16 +88,18 @@ public class ProductService : IProductService
             .FirstOrDefault();
     }
 
-    public IEnumerable<Product> GetFeaturedProducts(int count)
+    public IEnumerable<ProductViewModel> GetFeaturedProducts(int count)
     {
         var featuredStatus = PublicStatusInfo.Provider.Get("Featured", siteService.CurrentSite.SiteID);
         var featuredSKUs = SKUInfo.Provider.Get()
             .WhereEquals("SKUPublicStatusID", featuredStatus.PublicStatusID)
             .TopN(count)
             .AsSingleColumn("SKUID");
-            
+
         return ProductProvider.GetProducts()
-            .WhereIn("NodeSKUID", featuredSKUs);
+            .WhereIn("NodeSKUID", featuredSKUs)
+            .TypedResult
+            .Select(p => GetViewModel(p));
     }
 
     public IEnumerable<SKUOptionCategoryInfo> GetOtherSKUOptionCategories(int SKUID)

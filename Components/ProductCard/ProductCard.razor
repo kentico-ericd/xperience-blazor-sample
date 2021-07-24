@@ -1,31 +1,45 @@
-@using BlazorApp.Services
-@using CMS.DocumentEngine.Types.Blazor
-@using CMS.Ecommerce
-@using CMS.Helpers
 @using Kentico.Content.Web.Mvc
+@using Models
 @inject IPageUrlRetriever pageUrlRetriever
-@inject ICalculationService calculationService
 
 <div class="col-3 m-1 mb-5">
     <!-- bbb_deals -->
     <div class="bbb_deals">
-        <div class="ribbon ribbon-top-right"><span><small class="cross">x </small>3</span></div>
-        <div class="bbb_deals_title">Today's Combo Offer</div>
+        <div class="ribbon ribbon-top-right">
+            <span><i class="cross bi @ProductViewModel.IconClass"></i></span>
+        </div>
+        <div class="bbb_deals_title">@ProductViewModel.Product.CardHeader</div>
         <div class="bbb_deals_slider_container">
             <div class=" bbb_deals_item">
-                <div class="bbb_deals_image"><img src="https://i.imgur.com/9UYzfny.png" alt=""></div>
+                <div class="bbb_deals_image">
+                    <img src="@ProductViewModel.Image" alt="@ProductViewModel.Product.DocumentSKUName">
+                </div>
                 <div class="bbb_deals_content">
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
-                        <div class="bbb_deals_item_category"><a href="#">Laptops</a></div>
-                        <div class="bbb_deals_item_price_a ml-auto"><strike>₹30,000</strike></div>
+                        <div class="bbb_deals_item_category"><a
+                                href="#">@ProductViewModel.Product.SKUProduct.Department.DepartmentName</a></div>
+                        <div class="bbb_deals_item_price_a ml-auto">
+                            <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
+                                ProductViewModel.Prices.ListPrice)</strike>
+                        </div>
                     </div>
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
-                        <div class="bbb_deals_item_name">Toshiba B77</div>
-                        <div class="bbb_deals_item_price ml-auto">₹27,550</div>
+                        <div class="bbb_deals_item_name">@ProductViewModel.Product.DocumentSKUName</div>
+                        <div class="bbb_deals_item_price ml-auto">
+                            @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
+                            ProductViewModel.Prices.Price)
+                        </div>
                     </div>
                     <div class="available">
                         <div class="available_line d-flex flex-row justify-content-start">
-                            <div class="available_title">Available: <span>6</span></div>
+                            @if(ProductViewModel.Available) {
+                                    <div class="available_title">
+                                        <span>Available: @ProductViewModel.Product.SKU.SKUAvailableItems</span>
+                                    </div>
+                                }
+                                else {
+                                    <span class="not-available">Out of stock</span>
+                                }
                             <div class="sold_stars ml-auto"> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i
                                     class="fa fa-star"></i> <i class="fa fa-star"></i> </div>
                         </div>
@@ -39,45 +53,5 @@
 
 @code {
     [Parameter]
-    public Product Product { get; set; }
-
-    public bool Available
-    {
-        get
-        {
-            return !Product.SKU.SKUSellOnlyAvailable || Product.SKU.SKUAvailableItems > 0;
-        }
-    }
-
-    public string ProductImage
-    {
-        get
-        {
-            return string.IsNullOrEmpty(Product.SKU.SKUImagePath) ? null :
-            URLHelper.ResolveUrl(new FileUrl(Product.SKU.SKUImagePath, true).WithSizeConstraint(SizeConstraint.Size(452,
-            452)).RelativePath);
-        }
-    }
-
-    public string StatusName
-    {
-        get
-        {
-            return Product.SKUProduct.PublicStatus == null ? "" :
-            Product.SKUProduct.PublicStatus.PublicStatusDisplayName;
-        }
-    }
-
-    private ProductCatalogPrices mPrices;
-    public ProductCatalogPrices Prices
-    {
-        get
-        {
-            if (mPrices == null)
-            {
-                mPrices = calculationService.CalculatePrice(Product.SKU);
-            }
-            return mPrices;
-        }
-    }
+    public ProductViewModel ProductViewModel { get; set; }
 }

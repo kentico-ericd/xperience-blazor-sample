@@ -53,6 +53,57 @@ namespace CMS.DocumentEngine.Types.Blazor
 		#region "Properties"
 
 		/// <summary>
+		/// ProductID.
+		/// </summary>
+		[DatabaseIDField]
+		public int ProductID
+		{
+			get
+			{
+				return ValidationHelper.GetInteger(GetValue("ProductID"), 0);
+			}
+			set
+			{
+				SetValue("ProductID", value);
+			}
+		}
+
+
+		/// <summary>
+		/// A class from https://icons.getbootstrap.com e.g. "bi-cash-coin".
+		/// </summary>
+		[DatabaseField]
+		public string CardIconClass
+		{
+			get
+			{
+				return ValidationHelper.GetString(GetValue("CardIconClass"), @"");
+			}
+			set
+			{
+				SetValue("CardIconClass", value);
+			}
+		}
+
+
+		/// <summary>
+		/// Card header.
+		/// </summary>
+		[DatabaseField]
+		public string CardHeader
+		{
+			get
+			{
+				return ValidationHelper.GetString(GetValue("CardHeader"), @"");
+			}
+			set
+			{
+				SetValue("CardHeader", value);
+			}
+		}
+
+
+		/// <summary>
 		/// Gets an object that provides extended API for working with Product fields.
 		/// </summary>
 		[RegisterProperty]
@@ -97,6 +148,54 @@ namespace CMS.DocumentEngine.Types.Blazor
 			public ProductFields(Product instance)
 			{
 				mInstance = instance;
+			}
+
+
+			/// <summary>
+			/// ProductID.
+			/// </summary>
+			public int ID
+			{
+				get
+				{
+					return mInstance.ProductID;
+				}
+				set
+				{
+					mInstance.ProductID = value;
+				}
+			}
+
+
+			/// <summary>
+			/// A class from https://icons.getbootstrap.com e.g. "bi-cash-coin".
+			/// </summary>
+			public string CardIconClass
+			{
+				get
+				{
+					return mInstance.CardIconClass;
+				}
+				set
+				{
+					mInstance.CardIconClass = value;
+				}
+			}
+
+
+			/// <summary>
+			/// Card header.
+			/// </summary>
+			public string CardHeader
+			{
+				get
+				{
+					return mInstance.CardHeader;
+				}
+				set
+				{
+					mInstance.CardHeader = value;
+				}
 			}
 		}
 

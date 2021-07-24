@@ -10,9 +10,9 @@
 <Carousel />
 
 <section class="py-5 container-fluid row justify-content-center">
-    @foreach (var product in productService.GetFeaturedProducts(6))
+    @foreach (var vm in productService.GetFeaturedProducts(6))
     {
-        <ProductCard Product=product />
+        <ProductCard ProductViewModel=vm />
     }
 </section>
 
