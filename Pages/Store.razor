@@ -1,0 +1,40 @@
+@attribute [Route(Routes.Store)]
+@attribute [Route(Routes.StoreWithCategory)]
+@using BlazorApp.Components.ContentLayout
+@using Kentico.Content.Web.Mvc
+@inject IPageRetriever pageRetriever
+
+<ContentLayout>
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col">
+                <h3>@Header</h3>
+            </div>
+            <div class="col text-right">
+                <input type="text" @bind="searchText" />
+                <button @onclick="DoSearch">Search</button>
+            </div>
+        </div>
+        
+    </div>
+    
+</ContentLayout>
+
+@code {
+    #nullable enable
+    [Parameter]
+    public string? Category { get; set; }
+    public string? Header { get; set; }
+
+    public string? searchText;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Header = Category == null ? "All products" : Category;
+    }
+
+    private void DoSearch() {
+        Header = $"Search results - {searchText}";
+    }
+}

@@ -1,0 +1,13 @@
+<div class="container mt-4">
+    <div class="row justify-content-md-center">
+        <div class="col content pt-3 pb-3 pl-5 pr-5">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

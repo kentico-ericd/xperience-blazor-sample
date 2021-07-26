@@ -26,6 +26,7 @@ namespace BlazorApp
             services.AddAuthentication();
             services.AddSingleton<ICalculationService, CalculationService>();
             services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton<ISearchService, SearchService>();
             
             services.AddKentico(features =>
                 features.UsePageBuilder()

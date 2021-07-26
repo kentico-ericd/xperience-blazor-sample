@@ -1,19 +1,26 @@
-@page "/Store/{Alias}"
-@using CMS.DocumentEngine
+@attribute [Route(Routes.Product)]
+@using BlazorApp.Components.ContentLayout
+@using BlazorApp.Services
+@using CMS.DocumentEngine.Types.Blazor
 @using Kentico.Content.Web.Mvc
+@using Models
 @inject IPageRetriever pageRetriever
+@inject IProductService productService
 
-<h1>@Node.DocumentName (@Node.NodeSKUID)</h1>
+<ContentLayout>
+    <h3>@Model.Product.DocumentName (@Model.Product.NodeSKUID)</h3>
+</ContentLayout>
 
 @code {
     [Parameter]
     public string Alias { get; set; }
 
-    public TreeNode Node {
+    public ProductViewModel Model {
         get {
-            return pageRetriever.Retrieve<TreeNode>(query => query
+            var page = pageRetriever.Retrieve<Product>(query => query
                                 .WhereEquals("NodeAlias", Alias))
                                 .FirstOrDefault();
+            return productService.GetViewModel(page);
         }
     }
 }
