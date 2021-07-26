@@ -3,10 +3,12 @@ using BlazorApp.Models;
 using CMS.DataEngine;
 using CMS.DocumentEngine.Types.Blazor;
 using CMS.Ecommerce;
+using CMS.Search;
 
 namespace BlazorApp.Services {
     public interface IProductService {
         public abstract ProductViewModel GetViewModel(Product product);
+        public abstract ProductViewModel GetViewModel(SearchResultItem resultItem);
         public abstract IEnumerable<OptionViewModel> GetTextOptions(int SKUID);
         public abstract IEnumerable<OptionViewModel> GetAccessoryOptions(int SKUID);
         public abstract IEnumerable<Product> GetVariants(int SKUID);

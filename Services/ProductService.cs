@@ -5,6 +5,7 @@ using CMS.DataEngine;
 using CMS.DocumentEngine.Types.Blazor;
 using CMS.Ecommerce;
 using CMS.Helpers;
+using CMS.Search;
 using Kentico.Content.Web.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -25,6 +26,18 @@ namespace BlazorApp.Services {
             this.calculationService = calculationService;
             this.config = config;
         }
+
+        public ProductViewModel GetViewModel(SearchResultItem searchItem) {
+            var id = searchItem.SearchDocument.Get("nodeid").ToInteger(0);
+            if(id > 0) {
+                var product = ProductProvider.GetProduct(id, "en-us", siteService.CurrentSite.SiteName);
+                return GetViewModel(product);
+            }
+            else {
+                return null;
+            }
+        }
+
         public ProductViewModel GetViewModel(Product product)
         {
             var dimensions = config.GetValue<int>("AppSettings:CardImageDimensions");

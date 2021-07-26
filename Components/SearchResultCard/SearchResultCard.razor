@@ -1,0 +1,54 @@
+@using CMS.Helpers
+@using Kentico.Content.Web.Mvc
+@using Models
+@inject IPageUrlRetriever pageUrlRetriever
+
+<div class="col m-1 mb-5 pl-1 pr-1">
+    <div class="bbb_deals" onclick="window.location='@pageUrlRetriever.Retrieve(ProductViewModel.Product).AbsoluteUrl'">
+        <div class="ribbon ribbon-top-right">
+            <span><i class="cross bi @ProductViewModel.IconClass"></i></span>
+        </div>
+        <div class="bbb_deals_title">@ProductViewModel.Product.CardHeader</div>
+        <div class="bbb_deals_slider_container">
+            <div class=" bbb_deals_item">
+                <div class="bbb_deals_image">
+                    <img src="@ProductViewModel.Image" alt="@ProductViewModel.Product.DocumentSKUName">
+                </div>
+                <div class="bbb_deals_content">
+                    <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
+                        <div class="bbb_deals_item_category"><a
+                                href="#">@ProductViewModel.Product.SKUProduct.Department.DepartmentName</a></div>
+                    </div>
+                    <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
+                        <div class="bbb_deals_item_name">@HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUName, 35, "..", false)</div>
+                    </div>
+                    <div class="bbb_deals_item_price ml-auto">
+                        @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
+                        ProductViewModel.Prices.Price)
+                    </div>
+                    <div class="bbb_deals_item_price_a ml-auto">
+                        <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
+                            ProductViewModel.Prices.ListPrice)</strike>
+                    </div>
+                    <div class="available">
+                        <div class="available_line d-flex flex-row justify-content-start">
+                            @if(ProductViewModel.Available) {
+                                    <div class="available_title">
+                                        <span>Available: @ProductViewModel.Product.SKU.SKUAvailableItems</span>
+                                    </div>
+                                }
+                                else {
+                                    <span class="not-available">Out of stock</span>
+                                }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ProductViewModel ProductViewModel { get; set; }
+}

@@ -17,3 +17,9 @@ a:hover {
 h1, h2, h3, h4 {
     color: $text-orange !important;
 }
+
+input[type="text"] {
+    background-color: #444444;
+    border: 0px;
+    color: #ddd;
+}
