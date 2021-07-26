@@ -1,0 +1,9 @@
+@import 'wwwroot/css/variables';
+
+.navbar a {
+    color: #ddd !important;
+}
+
+.navbar a:hover {
+    color: $text-orange !important;
+}

@@ -1,10 +1,10 @@
+@using CMS.Helpers
 @using Kentico.Content.Web.Mvc
 @using Models
 @inject IPageUrlRetriever pageUrlRetriever
 
-<div class="col-3 m-1 mb-5">
-    <!-- bbb_deals -->
-    <div class="bbb_deals">
+<div class="col-2 m-1 mb-5 pl-1 pr-1">
+    <div class="bbb_deals" onclick="window.location='@pageUrlRetriever.Retrieve(ProductViewModel.Product).AbsoluteUrl'">
         <div class="ribbon ribbon-top-right">
             <span><i class="cross bi @ProductViewModel.IconClass"></i></span>
         </div>
@@ -18,17 +18,17 @@
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
                         <div class="bbb_deals_item_category"><a
                                 href="#">@ProductViewModel.Product.SKUProduct.Department.DepartmentName</a></div>
-                        <div class="bbb_deals_item_price_a ml-auto">
-                            <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
-                                ProductViewModel.Prices.ListPrice)</strike>
-                        </div>
                     </div>
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
-                        <div class="bbb_deals_item_name">@ProductViewModel.Product.DocumentSKUName</div>
-                        <div class="bbb_deals_item_price ml-auto">
-                            @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
-                            ProductViewModel.Prices.Price)
-                        </div>
+                        <div class="bbb_deals_item_name">@HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUName, 35, "..", false)</div>
+                    </div>
+                    <div class="bbb_deals_item_price ml-auto">
+                        @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
+                        ProductViewModel.Prices.Price)
+                    </div>
+                    <div class="bbb_deals_item_price_a ml-auto">
+                        <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
+                            ProductViewModel.Prices.ListPrice)</strike>
                     </div>
                     <div class="available">
                         <div class="available_line d-flex flex-row justify-content-start">
@@ -40,10 +40,7 @@
                                 else {
                                     <span class="not-available">Out of stock</span>
                                 }
-                            <div class="sold_stars ml-auto"> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i
-                                    class="fa fa-star"></i> <i class="fa fa-star"></i> </div>
                         </div>
-                        <div class="available_bar"><span style="width:17%"></span></div>
                     </div>
                 </div>
             </div>

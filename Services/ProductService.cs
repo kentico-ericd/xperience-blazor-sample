@@ -26,7 +26,8 @@ public class ProductService : IProductService
     public ProductViewModel GetViewModel(Product product)
     {
         var dimensions = config.GetValue<int>("AppSettings:CardImageDimensions");
-        var image = string.IsNullOrEmpty(product.SKU.SKUImagePath) ? "" :
+        var defaultImage = config.GetValue<string>("AppSettings:DefaultProductImage");
+        var image = string.IsNullOrEmpty(product.SKU.SKUImagePath) ? defaultImage :
             URLHelper.ResolveUrl(
                 new FileUrl(product.SKU.SKUImagePath, true)
                     .WithSizeConstraint(SizeConstraint.Size(dimensions, dimensions))

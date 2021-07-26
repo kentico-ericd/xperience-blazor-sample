@@ -1,30 +1,7 @@
-.mydiv {
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
+@import 'wwwroot/css/variables';
 
 .cross {
     font-size: 14px;
-}
-
-.padding-0 {
-    padding-right: 5px;
-    padding-left: 5px;
-}
-
-.img-style {
-    margin-left: -11px;
-    box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    max-width: 104% !important;
-}
-
-.m-t-20 {
-    margin-top: 20px;
-}
-
-.bbb_background {
-    background-color: #E0E0E0 !important;
 }
 
 .ribbon {
@@ -40,7 +17,6 @@
     width: 34px;
     border-radius: 50%;
     padding: 8px 0;
-    background-color: #3498db;
     box-shadow: 0 5px 10px rgba(0, 0, 0, .1);
     color: #fff;
     font: 100 18px/1 'Lato', sans-serif;
@@ -70,10 +46,6 @@
     right: 0;
 }
 
-.sold_stars i {
-    color: orange;
-}
-
 .ribbon-top-right span {
     right: 17px;
     top: 17px;
@@ -94,13 +66,17 @@ div {
 .bbb_deals {
     width: 100%;
     margin-right: 7%;
-    padding-top: 80px;
+    padding-top: 40px;
     padding-left: 25px;
     padding-right: 25px;
-    padding-bottom: 34px;
+    padding-bottom: 20px;
     box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    border-top: 3px solid $text-orange;
+    border-bottom: 3px solid $text-orange;
+    background-color: #282828;
     margin-top: 0px;
+    cursor: pointer;
+    color: $text-gray;
 }
 
 .bbb_deals_title {
@@ -108,8 +84,8 @@ div {
     top: 10px;
     left: 22px;
     font-size: 18px;
-    font-weight: 500;
-    color: #000000;
+    font-weight: 400;
+    color: $text-orange;
 }
 
 .bbb_deals_slider_container {
@@ -122,42 +98,35 @@ div {
 
 .bbb_deals_image {
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .bbb_deals_image img {
     width: 100%;
 }
 
-.bbb_deals_content {
-    margin-top: 33px;
-}
-
 .bbb_deals_item_category a {
     font-size: 14px;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.5);
 }
 
 .bbb_deals_item_price_a {
     font-size: 14px;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.6);
+    font-weight: 300;
 }
 
 .bbb_deals_item_price_a strike {
-    color: red;
+    color: rgb(153, 47, 47);
 }
 
 .bbb_deals_item_name {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 400;
-    color: #000000;
+    color: $text-orange;
 }
 
 .bbb_deals_item_price {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 500;
-    color: #6d6e73;
 }
 
 .available {
@@ -166,8 +135,8 @@ div {
 
 .available_title {
     font-size: 16px;
-    color: rgba(0, 0, 0, 0.5);
     font-weight: 400;
+    padding: 10px 0px;
 }
 
 .available_title span {
@@ -175,8 +144,9 @@ div {
 }
 
 .available_line .not-available {
-    background-color: red;
+    background-color: rgb(153, 47, 47);
     padding: 10px 30px;
+    color: #333;
 }
 
 @media only screen and (max-width: 991px) {
