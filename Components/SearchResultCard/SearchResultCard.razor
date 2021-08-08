@@ -3,29 +3,41 @@
 @using Models
 @inject IPageUrlRetriever pageUrlRetriever
 
-<div class="search-card col m-1 mb-5 pl-1 pr-1">
-    <div class="col-12">
-        <div class="container pl-0 mb-4">
-            <div class="row">
-                <div class="col-2 search-image">
-                    <img src="@ProductViewModel.Image" alt="@ProductViewModel.Product.DocumentSKUName">
+<div class="search-card col-12 m-1 mb-5 pl-1 pr-1">
+    <div class="container pl-0 mb-4">
+        <div class="row">
+            <div class="col-2 search-image">
+                <img src="@ProductViewModel.Image" alt="@ProductViewModel.Product.DocumentSKUName">
+            </div>
+            <div class="col">
+                <h3 class="mb-0">@ProductViewModel.Product.DocumentSKUName</h3>
+                <span class="search-description">
+                    @Description
+                </span>
+            </div>
+            <div class="search-price-col col-2">
+                <a href="@CategoryURL">
+                    @ProductViewModel.Product.SKUProduct.Department.DepartmentDisplayName
+                </a>
+                <div class="search-card-price font-weight-bold">
+                    @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
+                    ProductViewModel.Prices.Price)
                 </div>
-                <div class="col">
-                    <h3 class="mb-0">@ProductViewModel.Product.DocumentSKUName</h3>
-                    <span class="search-description">
-                        @Description
-                    </span>
-                </div>
-                <div class="search-price-col col-2">
-                    <a href="#">@ProductViewModel.Product.SKUProduct.Department.DepartmentName</a>
-                    <div class="search-card-price font-weight-bold">
-                        @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
-                        ProductViewModel.Prices.Price)
-                    </div>
-                    <div class="item-list-price ml-auto">
+                <div class="item-list-price ml-auto">
+                    @if(ProductViewModel.Prices.Price < ProductViewModel.Prices.ListPrice) {
                         <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
                             ProductViewModel.Prices.ListPrice)</strike>
-                    </div>
+                    }
+                    else {
+                        <span>&nbsp;</span>
+                    }
+                </div>
+                <div class="mt-4">
+                    <span class="red-box">
+                        <a href="@ProductViewModel.URL">
+                            <i class="bi bi-cart-fill"></i> Buy
+                        </a>
+                    </span>
                 </div>
             </div>
         </div>
@@ -39,8 +51,17 @@
     {
         get
         {
-            var str = HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUDescription, 550, "..", false);
+            var str = HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUShortDescription, 550, "..", false);
             return (MarkupString)str;
+        }
+    }
+
+    public string CategoryURL {
+        get {
+            return Routes.StoreWithCategory.Replace(
+                "{Category}",
+                ProductViewModel.Product.SKUProduct.Department.DepartmentName
+            );
         }
     }
 }

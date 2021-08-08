@@ -58,6 +58,7 @@ namespace BlazorApp.Services {
                 return new ProductViewModel
                 {
                     Product = product,
+                    URL = Routes.Product.Replace("{Alias}", product.NodeAlias),
                     Image = image,
                     StatusName = status,
                     IconClass = icon,

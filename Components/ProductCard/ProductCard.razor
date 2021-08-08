@@ -17,18 +17,25 @@
                 <div class="bbb_deals_content">
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
                         <div class="bbb_deals_item_category"><a
-                                href="#">@ProductViewModel.Product.SKUProduct.Department.DepartmentName</a></div>
+                                href="#">@ProductViewModel.Product.SKUProduct.Department.DepartmentDisplayName</a></div>
                     </div>
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
-                        <div class="bbb_deals_item_name">@HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUName, 35, "..", false)</div>
+                        <div class="bbb_deals_item_name">
+                            @HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUName, 35, "..", false)
+                        </div>
                     </div>
                     <div class="bbb_deals_item_price ml-auto">
                         @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
                         ProductViewModel.Prices.Price)
                     </div>
                     <div class="item-list-price ml-auto">
-                        <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
-                            ProductViewModel.Prices.ListPrice)</strike>
+                        @if(ProductViewModel.Prices.Price < ProductViewModel.Prices.ListPrice) {
+                            <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
+                                ProductViewModel.Prices.ListPrice)</strike>
+                        }
+                        else {
+                            <span>&nbsp;</span>
+                        }
                     </div>
                     <div class="available">
                         <div class="available_line d-flex flex-row justify-content-start">
@@ -38,7 +45,7 @@
                                     </div>
                                 }
                                 else {
-                                    <span class="not-available">Out of stock</span>
+                                    <span class="red-box">Out of stock</span>
                                 }
                         </div>
                     </div>

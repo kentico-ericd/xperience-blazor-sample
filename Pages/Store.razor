@@ -3,11 +3,14 @@
 @using BlazorApp.Components.ContentLayout
 @using BlazorApp.Components.SearchResultCard
 @using BlazorApp.Services
+@using CMS.Base
+@using CMS.Ecommerce
 @using Kentico.Content.Web.Mvc
 @using Models
 @inject IPageRetriever pageRetriever
 @inject ISearchService searchService
 @inject IProductService productService
+@inject ISiteService siteService
 
 <ContentLayout>
     <div class="container">
@@ -16,7 +19,7 @@
                 <h3>@Header</h3>
             </div>
             <div class="col d-inline-flex my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="text" @bind="searchText" />
+                <input class="form-control mr-sm-2" type="text" @onkeyup="KeyCheck" @bind="searchText" />
                 <button class="btn btn-outline-secondary my-2 my-sm-0" @onclick="DoSearch">Search</button>
             </div>
         </div>
@@ -41,12 +44,29 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Header = string.IsNullOrEmpty(Category) ? "All products" : Category;
+        DoSearch();
+    }
+
+    private void KeyCheck(KeyboardEventArgs e) {
+        if(e.Key == "Enter") DoSearch();
     }
 
     private void DoSearch() {
-        var searchResultsModel = searchService.Search(searchText);
+        var extraCondition = "";
+        if(!string.IsNullOrEmpty(Category)) {
+            var department = DepartmentInfo.Provider.Get(Category, siteService.CurrentSite.SiteID);
+            extraCondition = $"+skudepartmentid:(int){department.DepartmentID}";
+        }
+
+        var searchResultsModel = searchService.Search(searchText, 1, extraCondition);
         Items = searchResultsModel.Items.Select(i => productService.GetViewModel(i));
-        Header = $"Search results - {searchResultsModel.Query} ({searchResultsModel.Items.Count()})";
+        if(string.IsNullOrEmpty(Category)) {
+            Header = $"Search results for '{searchResultsModel.Query}' ({searchResultsModel.Items.Count()})";
+        }
+        else {
+            Header = $"{Category} + '{searchResultsModel.Query}' ({searchResultsModel.Items.Count()})";
+        }
+
+        StateHasChanged();
     }
 }

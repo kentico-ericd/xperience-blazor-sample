@@ -7,6 +7,7 @@ namespace BlazorApp.Models
     public class ProductViewModel
     {
         public Product Product { get; set; }
+        public string URL { get; set; }
         public string Image { get; set; }
         public string StatusName { get; set; }
         public string IconClass { get; set; }

@@ -122,6 +122,7 @@ div {
     font-size: 18px;
     font-weight: 400;
     color: $text-orange;
+    min-height: 60px;
 }
 
 .bbb_deals_item_price {
@@ -141,12 +142,6 @@ div {
 
 .available_title span {
     font-weight: 700;
-}
-
-.available_line .not-available {
-    background-color: rgb(153, 47, 47);
-    padding: 10px 30px;
-    color: #333;
 }
 
 @media only screen and (max-width: 991px) {
