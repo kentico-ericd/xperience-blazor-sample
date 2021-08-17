@@ -4,7 +4,7 @@
 @inject IPageUrlRetriever pageUrlRetriever
 
 <div class="col-2 m-1 mb-5 pl-1 pr-1">
-    <div class="bbb_deals" onclick="window.location='@pageUrlRetriever.Retrieve(ProductViewModel.Product).AbsoluteUrl'">
+    <div class="bbb_deals">
         <div class="ribbon ribbon-top-right">
             <span><i class="cross bi @ProductViewModel.IconClass"></i></span>
         </div>
@@ -16,12 +16,17 @@
                 </div>
                 <div class="bbb_deals_content">
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
-                        <div class="bbb_deals_item_category"><a
-                                href="#">@ProductViewModel.Product.SKUProduct.Department.DepartmentDisplayName</a></div>
+                        <div class="bbb_deals_item_category">
+                            <a href="@Routes.GetCategoryURL(ProductViewModel.Product.SKUProduct.Department)">
+                                @ProductViewModel.Product.SKUProduct.Department.DepartmentDisplayName
+                            </a>
+                        </div>
                     </div>
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
                         <div class="bbb_deals_item_name">
-                            @HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUName, 35, "..", false)
+                            <a href="@pageUrlRetriever.Retrieve(ProductViewModel.Product).AbsoluteUrl">
+                                @HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUName, 35, "..", false)
+                            </a>
                         </div>
                     </div>
                     <div class="bbb_deals_item_price ml-auto">

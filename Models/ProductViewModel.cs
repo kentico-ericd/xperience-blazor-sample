@@ -16,6 +16,6 @@ namespace BlazorApp.Models
         public IEnumerable<OptionViewModel> AccessoryOptions { get; set; }
         public IEnumerable<OptionViewModel> TextOptions { get; set; }
         public IEnumerable<OptionViewModel> NonVariantAttributeOptions { get; set; }
-        public IEnumerable<Product> Variants { get; set; }
+        public IEnumerable<SKUInfo> Variants { get; set; }
     }
 }

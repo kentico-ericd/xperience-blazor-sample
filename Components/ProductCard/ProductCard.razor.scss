@@ -75,7 +75,6 @@ div {
     border-bottom: 3px solid $text-orange;
     background-color: $bg-lighter;
     margin-top: 0px;
-    cursor: pointer;
     color: $text-gray;
 }
 
@@ -119,10 +118,13 @@ div {
 }
 
 .bbb_deals_item_name {
+    min-height: 60px;
+}
+
+.bbb_deals_item_name a {
     font-size: 18px;
     font-weight: 400;
-    color: $text-orange;
-    min-height: 60px;
+    color: $text-orange !important;
 }
 
 .bbb_deals_item_price {

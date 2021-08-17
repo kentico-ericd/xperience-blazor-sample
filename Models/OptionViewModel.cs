@@ -11,6 +11,7 @@ namespace BlazorApp.Models
         public decimal Adjustment { get; set; }
         public string Name { get; set; }
         public string OptionCategoryName { get; set; }
+        public int OptionCategoryID { get; set; }
 
         public static IEnumerable<OptionViewModel> GetViewModels(IEnumerable<ObjectQuery<SKUInfo>> queries, Dictionary<int, string> categoryNames)
         {
@@ -22,7 +23,13 @@ namespace BlazorApp.Models
             List<OptionViewModel> ovms = new List<OptionViewModel>();
             foreach (SKUInfo sku in attributeQ)
             {
-                ovms.Add(new OptionViewModel { OptionCategoryName = categoryNames[sku.SKUOptionCategoryID], Name = sku.SKUName, Adjustment = sku.SKUPrice, SKUID = sku.SKUID });
+                ovms.Add(new OptionViewModel {
+                    OptionCategoryName = categoryNames[sku.SKUOptionCategoryID],
+                    Name = sku.SKUName,
+                    Adjustment = sku.SKUPrice,
+                    SKUID = sku.SKUID,
+                    OptionCategoryID = sku.SKUOptionCategoryID
+                });
             }
             return ovms;
         }

@@ -27,6 +27,19 @@ button {
     border: 0px;
 }
 
+.product-detail-image img {
+    width: 100%;
+}
+
+.product-detail-sidebar {
+    background-color: #494949;
+}
+
+.product-detail-price {
+    font-size: 32px;
+    font-weight: bold;
+}
+
 .red-box {
     background-color: rgb(153, 47, 47);
     padding: 10px 30px;

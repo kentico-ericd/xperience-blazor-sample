@@ -13,7 +13,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace BlazorApp.Services {
+namespace BlazorApp.Services
+{
     public class ProductService : IProductService
     {
         private readonly ISiteService siteService;
@@ -27,13 +28,16 @@ namespace BlazorApp.Services {
             this.config = config;
         }
 
-        public ProductViewModel GetViewModel(SearchResultItem searchItem) {
+        public ProductViewModel GetViewModel(SearchResultItem searchItem)
+        {
             var id = searchItem.SearchDocument.Get("nodeid").ToInteger(0);
-            if(id > 0) {
+            if (id > 0)
+            {
                 var product = ProductProvider.GetProduct(id, "en-us", siteService.CurrentSite.SiteName);
                 return GetViewModel(product);
             }
-            else {
+            else
+            {
                 return null;
             }
         }
@@ -52,7 +56,8 @@ namespace BlazorApp.Services {
             var icon = string.IsNullOrEmpty(product.CardIconClass) ?
                 config.GetValue<string>("AppSettings:DefaultCardIcon") : product.CardIconClass;
 
-            return CacheHelper.Cache((cs) => {
+            return CacheHelper.Cache((cs) =>
+            {
                 cs.CacheDependency = CacheHelper.GetCacheDependency($"nodeid|${product.NodeID}");
 
                 return new ProductViewModel
@@ -89,15 +94,12 @@ namespace BlazorApp.Services {
             return OptionViewModel.GetViewModels(accessoryQueries, categoryNames);
         }
 
-        public IEnumerable<Product> GetVariants(int SKUID)
+        public IEnumerable<SKUInfo> GetVariants(int SKUID)
         {
-            List<Product> variants = new List<Product>();
+            List<SKUInfo> variants = new List<SKUInfo>();
             ObjectQuery<SKUInfo> query = VariantHelper.GetVariants(SKUID);
-            foreach (SKUInfo sku in query)
-            {
-                Product p = GetProduct(sku.SKUID);
-                variants.Add(p);
-            }
+            variants.AddRange(query);
+
             return variants;
         }
 
@@ -194,71 +196,97 @@ namespace BlazorApp.Services {
 
         public IEnumerable<OptionViewModel> GetNonVariantAttributeOptions(int SKUID)
         {
-            List<OptionViewModel> ovms = new List<OptionViewModel>();
-            //Get variants of the given SKU (VariantHelper)
-            var variants = VariantHelper.GetVariants(SKUID);
-            //Find the Variant Options(VariantOptionInfo objects) for those variants
-            foreach (SKUInfo v in variants)
+            //find the IDs of variants associated with the given product
+            IDataQuery variantIDs = VariantHelper.GetVariants(SKUID)
+                .AsSingleColumn("SKUID");
+
+            //find the IDs of the options associated with those variants
+            IDataQuery variantOptionIDs = VariantOptionInfo.Provider.Get()
+                .WhereIn("VariantSKUID", variantIDs)
+                .AsSingleColumn("OptionSKUID");
+
+            //find the IDs of the categories associated with the variants
+            IDataQuery variantCategoryIDs = SKUInfo.Provider.Get()
+                .Columns("SKUOptionCategoryID")
+                .Distinct(true)
+                .WhereIn("SKUID", variantOptionIDs)
+                .AsSingleColumn("SKUOptionCategoryID");
+
+            //find the categories associated with the parent sku, but not the variants.
+            var skuOptionCategories = SKUOptionCategoryInfo.Provider.Get()
+                .WhereEquals("SKUID", SKUID)
+                .And()
+                .WhereNotIn("CategoryID", variantCategoryIDs);
+
+            Dictionary<int, string> categoryNames = new Dictionary<int, string>();
+            List<ObjectQuery<SKUInfo>> queries = new List<ObjectQuery<SKUInfo>>();
+            foreach (SKUOptionCategoryInfo soci in skuOptionCategories)
             {
-                IEnumerable<VariantOptionInfo> variantOptionInfos = VariantOptionInfo.Provider.Get()
-                    .WhereEquals("VariantSKUID", v.SKUID);
-                foreach (VariantOptionInfo voi in variantOptionInfos)
+                //Get the OptionCategory indicated by the SKUOptionCategory binding
+                var cat = OptionCategoryInfo.Provider.Get(soci.CategoryID);
+
+                //Check whether it is the correct type
+                if (cat.CategoryType == OptionCategoryTypeEnum.Attribute)
                 {
-                    //Get the categories associated with those options , by looking at SKUOptionCategoryId of the SKU
-                    //referenced by the VariantOptionInfo (OptionSKUID)
-                    var category = SKUOptionCategoryInfo.Provider.Get()
-                        .WhereIn("SKUCategoryID",
-                            SKUInfo.Provider.Get()
-                            .WhereEquals("SKUID", voi.OptionSKUID)
-                            .AsSingleColumn("SKUOptionCategoryID")
-                        ).FirstOrDefault();
-                    //Get option categories (SKUOptionCategoryInfo objects associated with SKU) which are not in
-                    //those categories (WhereNotIn will come in handy here)
-                    var skuOptionCategories = SKUOptionCategoryInfo.Provider.Get()
-                        .WhereEquals("SKUID", SKUID)
-                        .WhereNotEquals("CategoryID", category.CategoryID);
-                    foreach (SKUOptionCategoryInfo optionCategory in skuOptionCategories)
+                    //add the display name to the collection for later
+                    if (!categoryNames.ContainsKey(cat.CategoryID))
                     {
-                        //Get the Option Category object (OptionCategoryInfo) for each one
-                        var oci = OptionCategoryInfo.Provider.Get(optionCategory.CategoryID);
-                        //Check if it’s an ATTRIBUTE category, and if so…
-                        if (oci.CategoryType == OptionCategoryTypeEnum.Attribute)
-                        {
-                            //Figure out which options from that category are allowed for the SKU
-                            //Add either all options, or the allowed options, (or a way to get them) to a list
-                            IEnumerable<SKUInfo> allowedSKUs;
-                            if (!optionCategory.AllowAllOptions)
-                            {
-                                allowedSKUs = SKUInfo.Provider.Get()
-                                    .WhereEquals("SKUOptionCategoryID", oci.CategoryID)
-                                    .And()
-                                    .WhereIn("SKUID", SKUAllowedOptionInfo.Provider.Get()
-                                                        .WhereEquals("SKUID", SKUID)
-                                                        .AsSingleColumn("OptionSKUID")
-                                    );
-                            }
-                            else
-                            {
-                                allowedSKUs = SKUInfo.Provider.Get()
-                                    .WhereEquals("SKUOptionCategoryID", oci.CategoryID);
-                            }
-                            //Package/use this data somehow
-                            foreach (SKUInfo sku in allowedSKUs)
-                            {
-                                if (ovms.Where(model => model.SKUID == sku.SKUID).Count() == 0)
-                                    ovms.Add(new OptionViewModel()
-                                    {
-                                        SKUID = sku.SKUID,
-                                        Adjustment = sku.SKUPrice,
-                                        Name = sku.SKUName,
-                                        OptionCategoryName = oci.CategoryDisplayName
-                                    });
-                            }
-                        }
+                        categoryNames.Add(cat.CategoryID, cat.CategoryDisplayName);
+                    }
+
+                    if (!soci.AllowAllOptions)
+                    {
+                        //add allowed options to the list of queries
+                        queries.Add(
+                        SKUInfo.Provider.Get()
+                            .WhereEquals("SKUOptionCategoryID", cat.CategoryID)
+                            .And()
+                            .WhereIn("SKUID", SKUAllowedOptionInfo.Provider.Get()
+                                                .WhereEquals("SKUID", SKUID)
+                                                .AsSingleColumn("OptionSKUID"))
+                        );
+                    }
+                    else
+                    {
+                        //add all options to the list of queries
+                        queries.Add(
+                        SKUInfo.Provider.Get()
+                            .WhereEquals("SKUOptionCategoryID", cat.CategoryID)
+                        );
                     }
                 }
             }
+            //create a sku query that is empty (negative IDs can't exist, so this will return empty)
+            ObjectQuery<SKUInfo> finalQuery = new ObjectQuery<SKUInfo>().WhereEquals("SKUID", -4206969);
+            if (queries.Count() > 0)
+            {
+                //use it to combine all the other ones
+                finalQuery = queries.Aggregate((currentQuery, next) => currentQuery.Union(next));
+            }
+
+            List<OptionViewModel> ovms = new List<OptionViewModel>();
+            foreach (SKUInfo sku in finalQuery)
+            {
+                //make option view models based on the results
+                ovms.Add(new OptionViewModel {
+                    OptionCategoryName = categoryNames[sku.SKUOptionCategoryID],
+                    Name = sku.SKUName,
+                    Adjustment = sku.SKUPrice,
+                    SKUID = sku.SKUID,
+                    OptionCategoryID = sku.SKUOptionCategoryID
+                });
+            }
             return ovms;
+        }
+
+        public IEnumerable<OptionCategoryInfo> GetOptionCategoryInfos(IEnumerable<OptionViewModel> options)
+        {
+            var distinctNames = options
+                .GroupBy(o => o.OptionCategoryName)
+                .Select(g => g.First().OptionCategoryName)
+                .ToList();
+            return OptionCategoryInfo.Provider.Get()
+                .WhereIn("CategoryName", distinctNames);
         }
     }
 }

@@ -1,5 +1,6 @@
 @attribute [Route(Routes.Product)]
 @using BlazorApp.Components.ContentLayout
+@using BlazorApp.Components.OptionSelector
 @using BlazorApp.Services
 @using CMS.DocumentEngine.Types.Blazor
 @using Kentico.Content.Web.Mvc
@@ -8,19 +9,49 @@
 @inject IProductService productService
 
 <ContentLayout>
-    <h3>@Model.Product.DocumentName (@Model.Product.NodeSKUID)</h3>
+    <h3 class="mb-4">@Model.Product.DocumentName</h3>
+    <div class="row">
+        <div class="product-detail-image col-6">
+            <img src="@Model.Image" alt="@Model.Product.DocumentSKUName">
+        </div>
+        <div class="col-2"></div>
+        <div class="col">
+            <div class="product-detail-sidebar text-right p-3">
+                <div class="product-detail-variants">
+                    <OptionSelector @ref="selector" ProductViewModel=Model />
+                </div>
+                <button @onclick="AddToCart" class="red-box mt-3">
+                    <i class="bi bi-cart-fill"></i> Add to cart
+                </button>
+            </div>
+        </div>
+    </div>
 </ContentLayout>
 
 @code {
     [Parameter]
     public string Alias { get; set; }
 
-    public ProductViewModel Model {
-        get {
-            var page = pageRetriever.Retrieve<Product>(query => query
-                                .WhereEquals("NodeAlias", Alias))
-                                .FirstOrDefault();
-            return productService.GetViewModel(page);
+    private ProductViewModel mProduct;
+
+    private OptionSelector selector;
+
+    public ProductViewModel Model
+    {
+        get
+        {
+            if (mProduct == null)
+            {
+                var page = pageRetriever.Retrieve<Product>(query => query
+                .WhereEquals("NodeAlias", Alias))
+                .FirstOrDefault();
+                mProduct = productService.GetViewModel(page);
+            }
+            return mProduct;
         }
+    }
+
+    public void AddToCart() {
+        
     }
 }
