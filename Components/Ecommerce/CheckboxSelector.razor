@@ -1,0 +1,31 @@
+@using BlazorApp.Services
+@using CMS.Ecommerce
+@using Models
+@inject ICartService cartService
+
+<div class="form-group">
+    <div class="form-check">
+        <h4>@Category.CategoryLiveSiteDisplayName:</h4>
+        @foreach (OptionViewModel option in Options)
+        {
+            if (option.CategoryName == Category.CategoryName)
+            {
+                <input @onchange="eventArgs => OnOptionSelected.InvokeAsync((option, eventArgs.Value))" id="accessory-@option.SKUID"
+    class="form-check-input" type="checkbox" value="@option.SKUID" />
+                <label for="accessory-@option.SKUID" class="form-check-label">@option.Name
+                    (+@cartService.FormatPrice(option.Adjustment, Currency))</label>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<OptionViewModel> Options { get; set; }
+    [Parameter]
+    public OptionCategoryInfo Category { get; set; }
+    [Parameter]
+    public CurrencyInfo Currency { get; set; }
+    [Parameter]
+    public EventCallback<(OptionViewModel, object)> OnOptionSelected { get; set; }
+}

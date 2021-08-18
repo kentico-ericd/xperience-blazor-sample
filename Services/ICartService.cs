@@ -7,5 +7,6 @@ namespace BlazorApp.Services
     public interface ICartService
     {
         public abstract void AddToCart(int skuid, IEnumerable<OptionViewModel> options);
+        public abstract string FormatPrice(decimal price, CurrencyInfo currency);
     }
 }

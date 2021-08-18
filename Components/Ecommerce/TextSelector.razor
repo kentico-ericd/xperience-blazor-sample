@@ -1,0 +1,29 @@
+@using BlazorApp.Services
+@using CMS.Ecommerce
+@using Models
+@inject ICartService cartService
+
+<h4>@Category.CategoryLiveSiteDisplayName:</h4>
+@foreach (OptionViewModel option in Options)
+{
+    if (option.CategoryName == Category.CategoryName)
+    {
+        <div class="form-group">
+            <label for="text-@option.SKUID"></label>
+            <input @onchange="eventArgs => OnTextChange.InvokeAsync((option, eventArgs.Value))" type="text" class="form-control"
+                id="text-@option.SKUID" name="text-@option.SKUID"
+                placeholder="+@cartService.FormatPrice(option.Adjustment, Currency)" value="" />
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<OptionViewModel> Options { get; set; }
+    [Parameter]
+    public OptionCategoryInfo Category { get; set; }
+    [Parameter]
+    public CurrencyInfo Currency { get; set; }
+    [Parameter]
+    public EventCallback<(OptionViewModel, object)> OnTextChange { get; set; }
+}

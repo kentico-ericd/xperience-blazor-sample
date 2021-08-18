@@ -1,0 +1,27 @@
+@using BlazorApp.Services
+@using CMS.Ecommerce
+@using Models
+@inject ICartService cartService
+
+<div class="form-group">
+    <h4>@Category.CategoryLiveSiteDisplayName:</h4>
+    <select @onchange="OnOptionSelected" id="nonvar-opt-@Category.CategoryName" class="form-control">
+        @foreach (OptionViewModel option in Options.Where(o =>
+        o.CategoryName == Category.CategoryName))
+        {
+            <option value="@option.SKUID">@option.Name (+@cartService.FormatPrice(option.Adjustment,
+            Currency))</option>
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<OptionViewModel> Options { get; set; }
+    [Parameter]
+    public OptionCategoryInfo Category { get; set; }
+    [Parameter]
+    public CurrencyInfo Currency { get; set; }
+    [Parameter]
+    public EventCallback<ChangeEventArgs> OnOptionSelected { get; set; }
+}

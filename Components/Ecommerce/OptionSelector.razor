@@ -1,0 +1,156 @@
+@using BlazorApp.Services
+@using CMS.Ecommerce
+@using CMS.Helpers
+@using Models
+@inject IProductService productService
+@inject ICartService cartService
+
+<form>
+    @if (ProductViewModel.Variants.Count() > 0)
+    {
+        <VariantSelector OnVariantSelected=VariantSelected Variants=ProductViewModel.Variants
+        Currency=ProductViewModel.Prices.Currency />
+    }
+
+    @if (ProductViewModel.AccessoryOptions.Count() > 0)
+    {
+        @foreach (OptionCategoryInfo optionCategory in
+       productService.GetOptionCategoryInfos(ProductViewModel.AccessoryOptions))
+        {
+            switch (optionCategory.CategorySelectionType)
+            {
+                case OptionCategorySelectionTypeEnum.CheckBoxesHorizontal:
+                case OptionCategorySelectionTypeEnum.CheckBoxesVertical:
+                    <CheckboxSelector OnOptionSelected="@((args)=> OptionSelected(args.Item1, args.Item2))" Category=optionCategory Options=ProductViewModel.AccessoryOptions
+        Currency=ProductViewModel.Prices.Currency />
+                    break;
+            }
+        }
+    }
+
+    @if (ProductViewModel.NonVariantAttributeOptions.Count() > 0)
+    {
+        foreach (OptionCategoryInfo optionCategory in
+        productService.GetOptionCategoryInfos(ProductViewModel.NonVariantAttributeOptions))
+        {
+            switch (optionCategory.CategorySelectionType)
+            {
+                case OptionCategorySelectionTypeEnum.Dropdownlist:
+                    <DropdownSelector OnOptionSelected=NonVarOptSelected Category=optionCategory Options=ProductViewModel.NonVariantAttributeOptions
+        Currency=ProductViewModel.Prices.Currency />
+                    break;
+            }
+        }
+    }
+
+    @if (ProductViewModel.TextOptions.Count() > 0)
+    {
+        foreach (OptionCategoryInfo optionCategory in productService.GetOptionCategoryInfos(ProductViewModel.TextOptions))
+        {
+            <TextSelector OnTextChange="@((args)=> TextOptionChanged(args.Item1, args.Item2))" Category=optionCategory Options=ProductViewModel.TextOptions
+        Currency=ProductViewModel.Prices.Currency />
+        }
+    }
+
+</form>
+<div class="product-detail-price">
+    @cartService.FormatPrice(TotalPrice, ProductViewModel.Prices.Currency)
+</div>
+
+@code {
+    [Parameter]
+    public ProductViewModel ProductViewModel { get; set; }
+    public SKUInfo SelectedVariant { get; set; }
+    public List<OptionViewModel> SelectedOptions = new List<OptionViewModel>();
+
+    public decimal TotalPrice
+    {
+        get
+        {
+            var price = ProductViewModel.Prices.Price;
+            if (SelectedVariant != null)
+            {
+                price += SelectedVariant.SKUPrice;
+            }
+
+            foreach (OptionViewModel option in SelectedOptions)
+            {
+                price += option.Adjustment;
+            }
+            return price;
+        }
+    }
+
+    protected void VariantSelected(ChangeEventArgs e)
+    {
+        var skuID = ValidationHelper.GetInteger(e.Value, 0);
+        if (skuID > 0)
+        {
+            SelectedVariant = ProductViewModel.Variants.Where(v => v.SKUID == skuID).FirstOrDefault();
+        }
+        else
+        {
+            SelectedVariant = null;
+        }
+
+        StateHasChanged();
+    }
+
+    private void NonVarOptSelected(ChangeEventArgs e)
+    {
+        var skuID = ValidationHelper.GetInteger(e.Value, 0);
+        var sku = SKUInfo.Provider.Get(skuID);
+        var option = OptionViewModel.GetOptionViewModel(sku);
+
+        var existingSelectedOption = SelectedOptions.Where(o => o.CategoryID ==
+        sku.SKUOptionCategoryID).FirstOrDefault();
+        if (existingSelectedOption != null)
+        {
+            SelectedOptions.Remove(existingSelectedOption);
+        }
+
+        SelectedOptions.Add(option);
+        StateHasChanged();
+    }
+
+    private void TextOptionChanged(OptionViewModel option, object value)
+    {
+        string text = ValidationHelper.GetString(value, string.Empty);
+        option.Text = text;
+
+        if (string.IsNullOrEmpty(text))
+        {
+            SelectedOptions.Remove(option);
+        }
+        else
+        {
+            var existingSelectedOption = SelectedOptions.Where(o => o.CategoryID ==
+            option.CategoryID).FirstOrDefault();
+            if (existingSelectedOption == null)
+            {
+                SelectedOptions.Add(option);
+            }
+            else
+            {
+                existingSelectedOption.Text = text;
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    public void OptionSelected(OptionViewModel option, object value)
+    {
+        bool isChecked = ValidationHelper.GetBoolean(value, false);
+        if (isChecked)
+        {
+            SelectedOptions.Add(option);
+        }
+        else
+        {
+            SelectedOptions.Remove(option);
+        }
+
+        StateHasChanged();
+    }
+}

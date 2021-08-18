@@ -1,0 +1,23 @@
+@using BlazorApp.Services
+@using CMS.Ecommerce
+@inject ICartService cartService
+
+<div class="form-group">
+    <h4>Variants</h4>
+    <select @onchange="OnVariantSelected" id="selected-variant" class="form-control">
+        <option value="0">(none)</option>
+        @foreach (SKUInfo variant in Variants)
+        {
+            <option value="@variant.SKUID">@variant.SKUName (+@cartService.FormatPrice(variant.SKUPrice, Currency))</option>
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<SKUInfo> Variants { get; set; }
+    [Parameter]
+    public CurrencyInfo Currency { get; set; }
+    [Parameter]
+    public EventCallback<ChangeEventArgs> OnVariantSelected { get; set; }
+}

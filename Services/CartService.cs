@@ -36,5 +36,10 @@ namespace BlazorApp.Services
 
             shoppingService.AddItemToCart(new ShoppingCartItemParameters(skuid, 1, parameters));
         }
+
+        public string FormatPrice(decimal price, CurrencyInfo currency)
+        {
+            return String.Format(currency.CurrencyFormatString, price);
+        }
     }
 }
