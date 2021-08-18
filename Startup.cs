@@ -23,12 +23,13 @@ namespace BlazorApp
         {
             services.AddRazorPages();
             services.AddServerSideBlazor()
-                .AddCircuitOptions(options => { options.DetailedErrors = true; });;
+                .AddCircuitOptions(options => { options.DetailedErrors = true; });
             services.AddAuthentication();
             services.AddSingleton<ICalculationService, CalculationService>();
             services.AddSingleton<IProductService, ProductService>();
             services.AddSingleton<ISearchService, SearchService>();
-            
+            services.AddSingleton<ICartService, CartService>();
+
             services.AddKentico(features =>
                 features.UsePageBuilder()
             )

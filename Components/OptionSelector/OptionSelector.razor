@@ -28,7 +28,7 @@
                     <h4>@optionCategory.CategoryLiveSiteDisplayName:</h4>
                     @foreach (OptionViewModel option in ProductViewModel.AccessoryOptions)
                     {
-                        if (option.OptionCategoryName == optionCategory.CategoryName)
+                        if (option.CategoryName == optionCategory.CategoryName)
                         {
                             <input @onchange="eventArgs => OptionSelected(option, eventArgs.Value)" id="accessory-@option.SKUID"
                 class="form-check-input" type="checkbox" value="@option.SKUID" />
@@ -50,7 +50,7 @@
                 <h4>@optionCategory.CategoryLiveSiteDisplayName:</h4>
                 <select @onchange="NonVarOptSelected" id="nonvar-opt-@optionCategory.CategoryName" class="form-control">
                     @foreach (OptionViewModel option in ProductViewModel.NonVariantAttributeOptions.Where(o =>
-                   o.OptionCategoryName == optionCategory.CategoryName))
+                   o.CategoryName == optionCategory.CategoryName))
                     {
                         <option value="@option.SKUID">@option.Name (+@FormatPrice(option.Adjustment))</option>
                     }
@@ -66,7 +66,7 @@
             <h4>@optionCategory.CategoryLiveSiteDisplayName:</h4>
             foreach (OptionViewModel option in ProductViewModel.TextOptions)
             {
-                if (option.OptionCategoryName == optionCategory.CategoryName)
+                if (option.CategoryName == optionCategory.CategoryName)
                 {
                     <div class="form-group">
                         <label for="text-@option.SKUID"></label>
@@ -86,8 +86,8 @@
 @code {
     [Parameter]
     public ProductViewModel ProductViewModel { get; set; }
-    private SKUInfo SelectedVariant { get; set; }
-    private List<OptionViewModel> SelectedOptions = new List<OptionViewModel>();
+    public SKUInfo SelectedVariant { get; set; }
+    public List<OptionViewModel> SelectedOptions = new List<OptionViewModel>();
 
     public decimal TotalPrice
     {
@@ -111,17 +111,13 @@
     {
         var skuID = ValidationHelper.GetInteger(e.Value, 0);
         var sku = SKUInfo.Provider.Get(skuID);
-        var option = new OptionViewModel {
-            OptionCategoryName = sku.SKUOptionCategory.CategoryName,
-            Name = sku.SKUName,
-            Adjustment = sku.SKUPrice,
-            SKUID = sku.SKUID,
-            OptionCategoryID = sku.SKUOptionCategoryID
-        };
+        var option = OptionViewModel.GetOptionViewModel(sku);
 
-        var existingSelectedOption = SelectedOptions.Where(o => o.OptionCategoryID == sku.SKUOptionCategoryID).FirstOrDefault();
-        if(existingSelectedOption != null) {
-            SelectedOptions.Remove(existingSelectedOption);            
+        var existingSelectedOption = SelectedOptions.Where(o => o.CategoryID ==
+        sku.SKUOptionCategoryID).FirstOrDefault();
+        if (existingSelectedOption != null)
+        {
+            SelectedOptions.Remove(existingSelectedOption);
         }
 
         SelectedOptions.Add(option);
@@ -131,14 +127,24 @@
     private void TextOptionChanged(OptionViewModel option, object value)
     {
         string text = ValidationHelper.GetString(value, string.Empty);
+        option.Text = text;
+
         if (string.IsNullOrEmpty(text))
         {
             SelectedOptions.Remove(option);
         }
         else
         {
-            if (!SelectedOptions.Contains(option))
+            var existingSelectedOption = SelectedOptions.Where(o => o.CategoryID ==
+            option.CategoryID).FirstOrDefault();
+            if (existingSelectedOption == null)
+            {
                 SelectedOptions.Add(option);
+            }
+            else
+            {
+                existingSelectedOption.Text = text;
+            }
         }
 
         StateHasChanged();

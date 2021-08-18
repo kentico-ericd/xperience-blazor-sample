@@ -1,0 +1,27 @@
+@attribute [Route(Routes.AddItem)]
+@using BlazorApp.Services
+@using CMS.Helpers
+@using Models
+@using Newtonsoft.Json
+@inject ICartService cartService
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var opts = QueryHelper.GetString("opts", "");
+        var skuid = QueryHelper.GetInteger("sku", 0);
+        IEnumerable<OptionViewModel> options = new List<OptionViewModel>();
+        
+        if(!string.IsNullOrEmpty(opts)) {
+            options = JsonConvert.DeserializeObject<IEnumerable<OptionViewModel>>(opts);
+        }
+
+        if(skuid > 0) {
+            cartService.AddToCart(skuid, options);
+        }
+
+        NavigationManager.NavigateTo(Routes.Cart);
+    }
+}

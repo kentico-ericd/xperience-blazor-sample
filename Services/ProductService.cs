@@ -1,5 +1,4 @@
 ﻿using BlazorApp.Models;
-using BlazorApp.Services;
 using CMS.Base;
 using CMS.DataEngine;
 using CMS.DocumentEngine.Types.Blazor;
@@ -82,7 +81,7 @@ namespace BlazorApp.Services
             var skuOptionCategories = SKUOptionCategoryInfo.Provider.Get().WhereEquals("SKUID", SKUID);
             Dictionary<int, string> categoryNames;
             var textQueries = GetQueries(SKUID, skuOptionCategories, OptionCategoryTypeEnum.Text, out categoryNames);
-            return OptionViewModel.GetViewModels(textQueries, categoryNames);
+            return OptionViewModel.GetOptionViewModels(textQueries, categoryNames);
         }
 
         public IEnumerable<OptionViewModel> GetAccessoryOptions(int SKUID)
@@ -91,7 +90,7 @@ namespace BlazorApp.Services
             var skuOptionCategories = SKUOptionCategoryInfo.Provider.Get().WhereEquals("SKUID", SKUID);
             Dictionary<int, string> categoryNames;
             var accessoryQueries = GetQueries(SKUID, skuOptionCategories, OptionCategoryTypeEnum.Products, out categoryNames);
-            return OptionViewModel.GetViewModels(accessoryQueries, categoryNames);
+            return OptionViewModel.GetOptionViewModels(accessoryQueries, categoryNames);
         }
 
         public IEnumerable<SKUInfo> GetVariants(int SKUID)
@@ -268,13 +267,7 @@ namespace BlazorApp.Services
             foreach (SKUInfo sku in finalQuery)
             {
                 //make option view models based on the results
-                ovms.Add(new OptionViewModel {
-                    OptionCategoryName = categoryNames[sku.SKUOptionCategoryID],
-                    Name = sku.SKUName,
-                    Adjustment = sku.SKUPrice,
-                    SKUID = sku.SKUID,
-                    OptionCategoryID = sku.SKUOptionCategoryID
-                });
+                ovms.Add(OptionViewModel.GetOptionViewModel(sku));
             }
             return ovms;
         }
@@ -282,8 +275,8 @@ namespace BlazorApp.Services
         public IEnumerable<OptionCategoryInfo> GetOptionCategoryInfos(IEnumerable<OptionViewModel> options)
         {
             var distinctNames = options
-                .GroupBy(o => o.OptionCategoryName)
-                .Select(g => g.First().OptionCategoryName)
+                .GroupBy(o => o.CategoryName)
+                .Select(g => g.First().CategoryName)
                 .ToList();
             return OptionCategoryInfo.Provider.Get()
                 .WhereIn("CategoryName", distinctNames);
