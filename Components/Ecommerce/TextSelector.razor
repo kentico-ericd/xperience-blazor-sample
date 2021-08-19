@@ -12,7 +12,7 @@
             <label for="text-@option.SKUID"></label>
             <input @onchange="eventArgs => OnTextChange.InvokeAsync((option, eventArgs.Value))" type="text" class="form-control"
                 id="text-@option.SKUID" name="text-@option.SKUID"
-                placeholder="+@cartService.FormatPrice(option.Adjustment, Currency)" value="" />
+                placeholder="@cartService.FormatPriceForSelector(option.Adjustment, Currency)" value="" />
         </div>
     }
 }

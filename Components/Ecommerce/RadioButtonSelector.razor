@@ -1,4 +1,4 @@
-@using BlazorApp.Services
+﻿@using BlazorApp.Services
 @using CMS.Ecommerce
 @using Models
 @inject ICartService cartService
@@ -12,7 +12,7 @@
         {
             <div class="@Class">
                 <input @onchange="eventArgs => OnOptionSelected.InvokeAsync((option, eventArgs.Value, Category))"
-                       id="accessory-@option.SKUID" class="form-check-input" type="checkbox" value="@option.SKUID" checked="@IsChecked(option)" />
+                       name="accessory-group-@Category.CategoryID" id="accessory-@option.SKUID" class="form-check-input" type="radio" value="@option.SKUID" checked="@IsChecked(option)" />
                 <label for="accessory-@option.SKUID" class="form-check-label">
                     @option.Name
                     @cartService.FormatPriceForSelector(option.Adjustment, Currency)
@@ -36,7 +36,7 @@
         var isChecked = DefaultOptions.Contains(option.SKUID);
         if (isChecked)
         {
-            option.Value = true;
+            option.Value = option.SKUID;
             EventsToFire.Add(option);
         }
 

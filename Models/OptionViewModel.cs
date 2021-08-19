@@ -14,7 +14,7 @@ namespace BlazorApp.Models
         public string Name { get; set; }
         public decimal Adjustment { get; set; }
         [JsonProperty]
-        public string Text { get; set; }
+        public object Value { get; set; }
         public string CategoryName { get; set; }
         public string CategoryDisplayName { get; set; }
         public int CategoryID { get; set; }

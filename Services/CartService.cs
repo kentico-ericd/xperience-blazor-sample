@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BlazorApp.Models;
 using CMS.Ecommerce;
+using CMS.Helpers;
 
 namespace BlazorApp.Services
 {
@@ -23,7 +24,7 @@ namespace BlazorApp.Services
                 switch (option.CategoryType)
                 {
                     case OptionCategoryTypeEnum.Text:
-                        parameters.Add(new ShoppingCartItemParameters { SKUID = option.SKUID, Text = option.Text });
+                        parameters.Add(new ShoppingCartItemParameters { SKUID = option.SKUID, Text = ValidationHelper.GetString(option.Value, "") });
                         break;
                     case OptionCategoryTypeEnum.Products:
                         parameters.Add(new ShoppingCartItemParameters { SKUID = option.SKUID, Quantity = 1 });
@@ -40,6 +41,15 @@ namespace BlazorApp.Services
         public string FormatPrice(decimal price, CurrencyInfo currency)
         {
             return String.Format(currency.CurrencyFormatString, price);
+        }
+
+        public string FormatPriceForSelector(decimal price, CurrencyInfo currency)
+        {
+            if(price > 0) {
+                return $"(+{FormatPrice(price, currency)})";
+            }
+
+            return "";
         }
     }
 }
