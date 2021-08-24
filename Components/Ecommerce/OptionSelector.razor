@@ -97,8 +97,8 @@
     {
         foreach (OptionCategoryInfo optionCategory in productService.GetOptionCategoryInfos(ProductViewModel.TextOptions))
         {
-            <TextSelector OnTextChange="((args)=> TextOptionChanged(args.Item1, args.Item2))" Category=optionCategory
-        Options=ProductViewModel.TextOptions Currency=ProductViewModel.Prices.Currency />
+            <TextSelector OnOptionSelected="((args)=> OptionSelected(args.Item1, args.Item2, args.Item3))"
+        Category=optionCategory Options=ProductViewModel.TextOptions Currency=ProductViewModel.Prices.Currency />
         }
     }
 
@@ -146,37 +146,35 @@
         StateHasChanged();
     }
 
-    private void TextOptionChanged(OptionViewModel option, object value)
-    {
-        string text = ValidationHelper.GetString(value, string.Empty);
-        option.Value = text;
-
-        if (string.IsNullOrEmpty(text))
-        {
-            SelectedOptions.Remove(option);
-        }
-        else
-        {
-            var existingSelectedOption = SelectedOptions.Where(o => o.CategoryID ==
-            option.CategoryID).FirstOrDefault();
-            if (existingSelectedOption == null)
-            {
-                SelectedOptions.Add(option);
-            }
-            else
-            {
-                existingSelectedOption.Value = text;
-            }
-        }
-
-        StateHasChanged();
-    }
-
     public void OptionSelected(OptionViewModel option, object value, OptionCategoryInfo category)
     {
-        option.Value = value;
+        if (option != null)
+        {
+            option.Value = value;
+        }
         switch (category.CategorySelectionType)
         {
+            case OptionCategorySelectionTypeEnum.TextBox:
+                string text = ValidationHelper.GetString(value, string.Empty);
+
+                if (string.IsNullOrEmpty(text))
+                {
+                    SelectedOptions.Remove(option);
+                }
+                else
+                {
+                    var existingTextOption = SelectedOptions.Where(o => o.CategoryID ==
+                    option.CategoryID).FirstOrDefault();
+                    if (existingTextOption == null)
+                    {
+                        SelectedOptions.Add(option);
+                    }
+                    else
+                    {
+                        existingTextOption.Value = text;
+                    }
+                }
+                break;
             case OptionCategorySelectionTypeEnum.CheckBoxesHorizontal:
             case OptionCategorySelectionTypeEnum.CheckBoxesVertical:
                 bool isChecked = ValidationHelper.GetBoolean(value, false);

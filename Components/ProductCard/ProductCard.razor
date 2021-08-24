@@ -1,7 +1,9 @@
+@using BlazorApp.Services
 @using CMS.Helpers
 @using Kentico.Content.Web.Mvc
 @using Models
 @inject IPageUrlRetriever pageUrlRetriever
+@inject ICartService cartService
 
 <div class="col-2 m-1 mb-5 pl-1 pr-1">
     <div class="bbb_deals">
@@ -24,19 +26,17 @@
                     </div>
                     <div class="bbb_deals_info_line d-flex flex-row justify-content-start">
                         <div class="bbb_deals_item_name">
-                            <a href="@pageUrlRetriever.Retrieve(ProductViewModel.Product).AbsoluteUrl">
+                            <a href="@Routes.GetProductURL(ProductViewModel.Product)">
                                 @HTMLHelper.LimitLength(ProductViewModel.Product.DocumentSKUName, 35, "..", false)
                             </a>
                         </div>
                     </div>
                     <div class="bbb_deals_item_price ml-auto">
-                        @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
-                        ProductViewModel.Prices.Price)
+                        @cartService.FormatPrice(ProductViewModel.Prices.Price, ProductViewModel.Prices.Currency)
                     </div>
                     <div class="item-list-price ml-auto">
                         @if(ProductViewModel.Prices.Price < ProductViewModel.Prices.ListPrice) {
-                            <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
-                                ProductViewModel.Prices.ListPrice)</strike>
+                            <strike>@cartService.FormatPrice(ProductViewModel.Prices.ListPrice, ProductViewModel.Prices.Currency)</strike>
                         }
                         else {
                             <span>&nbsp;</span>

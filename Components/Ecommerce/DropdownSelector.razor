@@ -8,7 +8,7 @@
     <select value="@GetDefault()" @onchange="eventArgs => OnOptionSelected.InvokeAsync((null, eventArgs.Value, Category))" id="nonvar-opt-@Category.CategoryName" class="form-control">
         @if(!string.IsNullOrEmpty(Category.CategoryDefaultRecord))
         {
-            <option value="">@Category.CategoryDefaultRecord</option>
+            <option value="0">@Category.CategoryDefaultRecord</option>
         }
         @foreach (OptionViewModel option in Options.Where(o =>
      o.CategoryName == Category.CategoryName))
@@ -24,6 +24,10 @@
 @code {
     private int GetDefault()
     {
-        return DefaultOptions.FirstOrDefault();
+        var skuID = DefaultOptions.FirstOrDefault();
+        var option = Options.Where(o => o.CategoryName == Category.CategoryName).FirstOrDefault();
+        option.Value = skuID;
+        EventsToFire.Add(option);
+        return skuID;
     }
 }

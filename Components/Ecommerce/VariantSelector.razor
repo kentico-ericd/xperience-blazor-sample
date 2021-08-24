@@ -8,8 +8,10 @@
         <option value="0">(default)</option>
         @foreach (SKUInfo variant in Variants)
         {
-            <option value="@variant.SKUID">@variant.SKUName @cartService.FormatPriceForSelector(variant.SKUPrice,
-            Currency)</option>
+            <option value="@variant.SKUID">
+                @variant.SKUName
+                @cartService.FormatPriceForSelector(variant.SKUPrice, Currency)
+            </option>
         }
     </select>
 </div>

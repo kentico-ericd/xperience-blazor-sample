@@ -1,3 +1,4 @@
+using CMS.DocumentEngine.Types.Blazor;
 using CMS.Ecommerce;
 
 namespace BlazorApp {
@@ -14,6 +15,10 @@ namespace BlazorApp {
                 "{Category}",
                 d.DepartmentName
             );
+        }
+
+        public static string GetProductURL(Product p) {
+            return Routes.Product.Replace("{Alias}", p.NodeAlias);
         }
     }
 }

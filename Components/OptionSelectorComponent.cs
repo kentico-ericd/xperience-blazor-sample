@@ -2,6 +2,7 @@
 using CMS.Ecommerce;
 using CMS.Helpers;
 using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,6 +32,7 @@ namespace BlazorApp.Components
         // Contains a list of options that were selected by default, to fire at the first render
         protected List<OptionViewModel> EventsToFire = new List<OptionViewModel>();
 
+        // Call the handler for every option that had a value selected when loading, to update UI
         protected override void OnAfterRender(bool firstRender)
         {
             base.OnAfterRender(firstRender);

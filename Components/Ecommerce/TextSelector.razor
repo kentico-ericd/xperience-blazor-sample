@@ -1,7 +1,7 @@
 @using BlazorApp.Services
-@using CMS.Ecommerce
 @using Models
 @inject ICartService cartService
+@inherits OptionSelectorComponent
 
 <h4>@Category.CategoryLiveSiteDisplayName:</h4>
 @foreach (OptionViewModel option in Options)
@@ -10,20 +10,23 @@
     {
         <div class="form-group">
             <label for="text-@option.SKUID"></label>
-            <input @onchange="eventArgs => OnTextChange.InvokeAsync((option, eventArgs.Value))" type="text" class="form-control"
+            <input @onchange="eventArgs => OnOptionSelected.InvokeAsync((option, eventArgs.Value, Category))" type="text" class="form-control"
                 id="text-@option.SKUID" name="text-@option.SKUID"
-                placeholder="@cartService.FormatPriceForSelector(option.Adjustment, Currency)" value="" />
+                placeholder="@cartService.FormatPriceForSelector(option.Adjustment, Currency)" value="@DefaultText(option)" />
         </div>
     }
 }
 
 @code {
-    [Parameter]
-    public IEnumerable<OptionViewModel> Options { get; set; }
-    [Parameter]
-    public OptionCategoryInfo Category { get; set; }
-    [Parameter]
-    public CurrencyInfo Currency { get; set; }
-    [Parameter]
-    public EventCallback<(OptionViewModel, object)> OnTextChange { get; set; }
+    private string DefaultText(OptionViewModel option)
+    {
+        var text = Category.CategoryDefaultOptions;
+        if (!string.IsNullOrEmpty(text))
+        {
+            option.Value = text;
+            EventsToFire.Add(option);
+        }
+
+        return text;
+    }
 }
