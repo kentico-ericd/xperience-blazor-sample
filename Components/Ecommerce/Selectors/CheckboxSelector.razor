@@ -1,0 +1,42 @@
+@using BlazorApp.Services
+@using CMS.Ecommerce
+@using Models
+@inject ICartService cartService
+@inherits OptionSelectorComponent
+
+<h4>@Category.CategoryLiveSiteDisplayName:</h4>
+<div class="form-group">
+    @foreach (OptionViewModel option in Options.Where(o => o.CategoryID == Category.CategoryID))
+    {
+        <div class="@Class">
+            <input @onchange="eventArgs => OnOptionSelected.InvokeAsync((option, eventArgs.Value, Category))"
+                    id="accessory-@option.SKUID" class="form-check-input" type="checkbox" value="@option.SKUID" checked="@IsChecked(option)" />
+            <label for="accessory-@option.SKUID" class="form-check-label">
+                @option.Name
+                @cartService.FormatPriceForSelector(option.Adjustment, Currency)
+            </label>
+        </div>
+    }
+</div>
+
+@code {
+    private string Class
+    {
+        get
+        {
+            return $"form-check{(IsVertical ? "" : " form-check-inline")}";
+        }
+    }
+
+    private bool IsChecked(OptionViewModel option)
+    {
+        var isChecked = DefaultOptions.Contains(option.SKUID);
+        if (isChecked)
+        {
+            option.Value = true;
+            EventsToFire.Add(option);
+        }
+
+        return isChecked;
+    }
+}

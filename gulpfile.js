@@ -20,7 +20,7 @@ gulp.task("clean", function () {
 gulp.task("sass", function () {
 	return gulp.src(
 	[
-        wwwRootPath + "css/site.scss",
+		projectPath + "Pages/**/*.scss",
 		projectPath + "Components/**/*.scss"
 	])
 	.pipe(sass())

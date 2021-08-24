@@ -5,13 +5,14 @@
 
 <div class="form-group">
     <h4>@Category.CategoryLiveSiteDisplayName:</h4>
-    <select value="@GetDefault()" @onchange="eventArgs => OnOptionSelected.InvokeAsync((null, eventArgs.Value, Category))" id="nonvar-opt-@Category.CategoryName" class="form-control">
-        @if(!string.IsNullOrEmpty(Category.CategoryDefaultRecord))
+    <select value="@GetDefault()"
+        @onchange="eventArgs => OnOptionSelected.InvokeAsync((null, eventArgs.Value, Category))"
+        id="nonvar-opt-@Category.CategoryName" class="form-control">
+        @if (!string.IsNullOrEmpty(Category.CategoryDefaultRecord))
         {
             <option value="0">@Category.CategoryDefaultRecord</option>
         }
-        @foreach (OptionViewModel option in Options.Where(o =>
-     o.CategoryName == Category.CategoryName))
+        @foreach (OptionViewModel option in Options.Where(o => o.CategoryID == Category.CategoryID))
         {
             <option value="@option.SKUID">
                 @option.Name

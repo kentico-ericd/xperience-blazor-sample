@@ -1,0 +1,15 @@
+@using BlazorApp.Services
+@using Models
+@inject ICartService cartService
+@inherits OptionSelectorComponent
+
+<h4>@Category.CategoryLiveSiteDisplayName:</h4>
+@foreach (OptionViewModel option in Options.Where(o => o.CategoryID == Category.CategoryID))
+{
+    <div class="form-group">
+        <label for="text-@option.SKUID"></label>
+        <input @onchange="eventArgs => OnOptionSelected.InvokeAsync((option, eventArgs.Value, Category))" type="text" class="form-control"
+            id="text-@option.SKUID" name="text-@option.SKUID"
+            placeholder="@Category.CategoryDefaultOptions @cartService.FormatPriceForSelector(option.Adjustment, Currency)" />
+    </div>
+}

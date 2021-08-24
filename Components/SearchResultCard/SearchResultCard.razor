@@ -1,7 +1,11 @@
+@using BlazorApp.Services
 @using CMS.Helpers
 @using Kentico.Content.Web.Mvc
 @using Models
 @inject IPageUrlRetriever pageUrlRetriever
+@inject IProductService productService
+@inject ICartService cartService
+@inject NavigationManager navigationManager
 
 <div class="search-card col-12 m-1 mb-5 pl-1 pr-1">
     <div class="container pl-0 mb-4">
@@ -20,24 +24,23 @@
                     @ProductViewModel.Product.SKUProduct.Department.DepartmentDisplayName
                 </a>
                 <div class="search-card-price font-weight-bold">
-                    @string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
-                    ProductViewModel.Prices.Price)
+                    @cartService.FormatPrice(ProductViewModel.Prices.Price, ProductViewModel.Prices.Currency)
                 </div>
                 <div class="item-list-price ml-auto">
-                    @if(ProductViewModel.Prices.Price < ProductViewModel.Prices.ListPrice) {
-                        <strike>@string.Format(ProductViewModel.Prices.Currency.CurrencyFormatString,
-                            ProductViewModel.Prices.ListPrice)</strike>
+                    @if (ProductViewModel.Prices.Price < ProductViewModel.Prices.ListPrice)
+                    {
+                        <strike class="text-danger">@cartService.FormatPrice(ProductViewModel.Prices.ListPrice,
+                        ProductViewModel.Prices.Currency)</strike>
                     }
-                    else {
+                    else
+                    {
                         <span>&nbsp;</span>
                     }
                 </div>
                 <div class="mt-4">
-                    <span class="red-box">
-                        <a href="@ProductViewModel.URL">
-                            <i class="bi bi-cart-fill"></i> Buy
-                        </a>
-                    </span>
+                    <button @onclick="args => navigationManager.NavigateTo(ProductViewModel.URL)" class="btn btn-danger">
+                        <i class="bi bi-cart-fill"></i> Buy
+                    </button>
                 </div>
             </div>
         </div>

@@ -64,7 +64,7 @@ namespace BlazorApp
             {
                 endpoints.Kentico().MapRoutes();
                 endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/Root");
+                endpoints.MapFallbackToPage("/Root/Root");
             });
         }
     }

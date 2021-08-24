@@ -41,15 +41,19 @@ namespace BlazorApp.Services
             }
         }
 
-        public ProductViewModel GetViewModel(Product product)
-        {
+        public string GetProductImage(SKUInfo sku) {
             var dimensions = config.GetValue<int>("AppSettings:CardImageDimensions");
             var defaultImage = config.GetValue<string>("AppSettings:DefaultProductImage");
-            var image = string.IsNullOrEmpty(product.SKU.SKUImagePath) ? defaultImage :
+            return string.IsNullOrEmpty(sku.SKUImagePath) ? defaultImage :
                 URLHelper.ResolveUrl(
-                    new FileUrl(product.SKU.SKUImagePath, true)
+                    new FileUrl(sku.SKUImagePath, true)
                         .WithSizeConstraint(SizeConstraint.Size(dimensions, dimensions))
                         .RelativePath);
+        }
+
+        public ProductViewModel GetViewModel(Product product)
+        {
+            var image = GetProductImage(product.SKU);
             var status = product.SKUProduct.PublicStatus == null ? "" :
                 product.SKUProduct.PublicStatus.PublicStatusDisplayName;
             var icon = string.IsNullOrEmpty(product.CardIconClass) ?

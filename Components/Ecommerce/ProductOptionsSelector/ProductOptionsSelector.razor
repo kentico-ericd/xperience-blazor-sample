@@ -1,7 +1,9 @@
+@using BlazorApp.Components.Ecommerce.Selectors
 @using BlazorApp.Services
 @using CMS.Ecommerce
 @using CMS.Helpers
 @using Models
+@using System.Text
 @inject IProductService productService
 @inject ICartService cartService
 
@@ -156,7 +158,6 @@
         {
             case OptionCategorySelectionTypeEnum.TextBox:
                 string text = ValidationHelper.GetString(value, string.Empty);
-
                 if (string.IsNullOrEmpty(text))
                 {
                     SelectedOptions.Remove(option);
@@ -171,7 +172,8 @@
                     }
                     else
                     {
-                        existingTextOption.Value = text;
+                        SelectedOptions.Remove(existingTextOption);
+                        SelectedOptions.Add(option);
                     }
                 }
                 break;

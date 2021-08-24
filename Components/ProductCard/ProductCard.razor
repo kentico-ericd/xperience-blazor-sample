@@ -35,23 +35,28 @@
                         @cartService.FormatPrice(ProductViewModel.Prices.Price, ProductViewModel.Prices.Currency)
                     </div>
                     <div class="item-list-price ml-auto">
-                        @if(ProductViewModel.Prices.Price < ProductViewModel.Prices.ListPrice) {
-                            <strike>@cartService.FormatPrice(ProductViewModel.Prices.ListPrice, ProductViewModel.Prices.Currency)</strike>
+                        @if (ProductViewModel.Prices.Price < ProductViewModel.Prices.ListPrice)
+                        {
+                            <strike class="text-danger">@cartService.FormatPrice(ProductViewModel.Prices.ListPrice,
+                            ProductViewModel.Prices.Currency)</strike>
                         }
-                        else {
+                        else
+                        {
                             <span>&nbsp;</span>
                         }
                     </div>
                     <div class="available">
                         <div class="available_line d-flex flex-row justify-content-start">
-                            @if(ProductViewModel.Available) {
-                                    <div class="available_title">
-                                        <span>Available: @ProductViewModel.Product.SKU.SKUAvailableItems</span>
-                                    </div>
+                            <div class="available_title">
+                                @if (ProductViewModel.Available)
+                                {
+                                    <span>Available: @ProductViewModel.Product.SKU.SKUAvailableItems</span>
                                 }
-                                else {
-                                    <span class="red-box">Out of stock</span>
+                                else
+                                {
+                                    <span class="text-danger">Out of stock</span>
                                 }
+                            </div>
                         </div>
                     </div>
                 </div>

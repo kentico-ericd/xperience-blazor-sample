@@ -1,0 +1,24 @@
+@import '../../variables';
+
+html, body {
+    background-color: #222 !important;
+    color: $text-gray !important;
+}
+
+a{
+    color: $text-gray !important;
+}
+
+a:hover {
+    color: $text-orange !important;
+}
+
+h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
+    color: $text-orange !important;
+}
+
+input[type="text"] {
+    background-color: #444444;
+    border: 0px;
+    color: #ddd;
+}

@@ -1,0 +1,48 @@
+@attribute [Route(Routes.Cart)]
+@using BlazorApp.Components.ContentLayout
+@using BlazorApp.Components.Ecommerce.CartItem
+@using BlazorApp.Services
+@using CMS.Ecommerce
+@inject IShoppingService shoppingService
+@inject ICartService cartService
+
+<ContentLayout>
+    <section class="py-5 container-fluid row">
+        @foreach (var item in cart.CartItems.Where(i => i.CartItemParentGUID.Equals(Guid.Empty)))
+        {
+            <CartItem RefreshRequested=ForceRefresh Item=item Options=@cart.CartItems.Where(i => i.CartItemParentGUID.Equals(item.CartItemGUID)) />
+        }
+        <div class="col pr-0">
+            <div class="cart-total-container col-8 pt-2 float-right text-right">
+                <span class="mr-2">Total:</span>
+                <span class="h2">@CartTotal</span>
+                <div class="mt-3">
+                    <button class="btn btn-success">
+                        <i class="bi bi-arrow-right-circle"></i> Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </section>
+</ContentLayout>
+
+@code {
+    private ShoppingCartInfo cart;
+    private string CartTotal {
+        get {
+            return cartService.FormatPrice(cart.GrandTotal, cart.Currency);
+        }
+    }
+
+    protected string ForceRefresh() {
+        StateHasChanged();
+        return "";
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        cart = shoppingService.GetCurrentShoppingCart();
+    }
+}

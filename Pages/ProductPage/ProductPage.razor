@@ -1,12 +1,13 @@
 @attribute [Route(Routes.Product)]
 @using BlazorApp.Components.ContentLayout
-@using BlazorApp.Components.Ecommerce
+@using BlazorApp.Components.Ecommerce.ProductOptionsSelector
 @using BlazorApp.Services
 @using CMS.DocumentEngine.Types.Blazor
 @using CMS.Ecommerce
 @using Kentico.Content.Web.Mvc
 @using Models
 @using Newtonsoft.Json
+@using System.Text
 @inject IPageRetriever pageRetriever
 @inject IProductService productService
 @inject ICartService cartService
@@ -23,9 +24,9 @@
         <div class="col">
             <div class="product-detail-sidebar text-right p-3">
                 <div class="product-detail-options">
-                    <OptionSelector @ref="selector" ProductViewModel=Model />
+                    <ProductOptionsSelector @ref="selector" ProductViewModel=Model />
                 </div>
-                <button @onclick="AddToCart" class="red-box mt-3">
+                <button @onclick="AddToCart" class="btn btn-danger mt-3">
                     <i class="bi bi-cart-fill"></i> Add to cart
                 </button>
             </div>
@@ -39,7 +40,7 @@
 
     private ProductViewModel mProduct;
 
-    private OptionSelector selector;
+    private ProductOptionsSelector selector;
 
     public ProductViewModel Model
     {

@@ -1,4 +1,4 @@
-@import 'wwwroot/css/variables';
+@import '../../variables';
 
 .cross {
     font-size: 14px;
@@ -49,14 +49,6 @@
 .ribbon-top-right span {
     right: 17px;
     top: 17px;
-}
-
-div {
-    display: block;
-    position: relative;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
 }
 
 .bbb_deals_featured {
@@ -111,10 +103,6 @@ div {
 .item-list-price {
     font-size: 14px;
     font-weight: 300;
-}
-
-.item-list-price strike {
-    color: rgb(153, 47, 47);
 }
 
 .bbb_deals_item_name {
