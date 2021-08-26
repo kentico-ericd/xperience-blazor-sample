@@ -1,10 +1,11 @@
 @attribute [Route(Routes.Cart)]
-@using BlazorApp.Components.ContentLayout
 @using BlazorApp.Components.Ecommerce.CartItem
+@using BlazorApp.Components.Layout.ContentLayout
 @using BlazorApp.Services
 @using CMS.Ecommerce
 @inject IShoppingService shoppingService
 @inject ICartService cartService
+@inject NavigationManager navigationManager
 
 <ContentLayout>
     <section class="py-5 container-fluid row">
@@ -30,7 +31,7 @@
                     <button @onclick="ClearCart" class="btn btn-danger">
                         <i class="bi bi-bag-x"></i> Clear
                     </button>
-                    <button class="btn btn-success">
+                    <button disabled="@(cart.CartItems.Count() == 0)" @onclick="BeginCheckout" class="btn btn-success">
                         <i class="bi bi-arrow-right-circle"></i> Checkout
                     </button>
                 </div>
@@ -47,6 +48,10 @@
         get {
             return cartService.FormatPrice(cart.GrandTotal, cart.Currency);
         }
+    }
+
+    private void BeginCheckout() {
+        navigationManager.NavigateTo(Routes.GetCheckoutStep(0));
     }
 
     private void ClearCart() {

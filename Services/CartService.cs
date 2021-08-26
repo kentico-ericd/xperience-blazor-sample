@@ -40,14 +40,16 @@ namespace BlazorApp.Services
 
         public string FormatPriceForSelector(decimal price, CurrencyInfo currency, bool isVariant)
         {
-            if(price > 0) {
+            if (price > 0)
+            {
                 return $"({(isVariant ? "" : "+")}{FormatPrice(price, currency)})";
             }
 
             return "";
         }
 
-        public string FormatPrice(decimal price, CurrencyInfo currency) {
+        public string FormatPrice(decimal price, CurrencyInfo currency)
+        {
             return String.Format(currency.CurrencyFormatString, price);
         }
     }

@@ -1,0 +1,49 @@
+@inject NavigationManager navigationManager
+
+<div class="row justify-content-between mt-5">
+    <div class="col-3">
+        <button @onclick="args => CheckoutStep(-1)" class="btn btn-danger">
+            <i class="bi bi-arrow-left-circle"></i> Back
+        </button>
+    </div>
+    <div class="col-3">
+        @if(currentStep == Routes.CheckoutProcess.Length - 1)
+        {
+            <button @onclick="SubmitOrder" class="btn btn-success">
+                <i class="bi bi-arrow-right-circle"></i> Complete
+            </button>
+        }
+        else
+        {
+            <button @onclick="args => CheckoutStep(1)" class="btn btn-success">
+                <i class="bi bi-arrow-right-circle"></i> Next
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    private int currentStep;
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        var path = navigationManager.Uri.Replace(navigationManager.BaseUri, "/");
+        currentStep = Array.IndexOf(Routes.CheckoutProcess, path);
+    }
+
+    private void SubmitOrder() {
+
+    }
+
+    private void CheckoutStep(int stepChange)
+    {
+        if(currentStep == 0 && stepChange < 0) {
+            navigationManager.NavigateTo(Routes.Cart);
+        }
+        else
+        {
+            navigationManager.NavigateTo(Routes.GetCheckoutStep(currentStep + stepChange));
+        }
+        
+    }
+}

@@ -1,0 +1,14 @@
+@using BlazorApp.Components.Ecommerce.CheckoutStepControl
+@using BlazorApp.Components.Layout.ContentLayout
+
+<CascadingValue Name="CheckoutStep" Value="1">
+    <ContentLayout>
+        @ChildContent
+        <CheckoutStepControl />
+    </ContentLayout>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
