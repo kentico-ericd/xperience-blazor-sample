@@ -5,12 +5,11 @@
 <div class="form-group">
     <h4>Models</h4>
     <select @onchange="OnVariantSelected" id="selected-variant" class="form-control">
-        <option value="0">(default)</option>
         @foreach (SKUInfo variant in Variants)
         {
             <option value="@variant.SKUID">
                 @variant.SKUName
-                @cartService.FormatPriceForSelector(variant.SKUPrice, Currency)
+                @cartService.FormatPriceForSelector(variant.SKUPrice, Currency, true)
             </option>
         }
     </select>
@@ -23,4 +22,12 @@
     public CurrencyInfo Currency { get; set; }
     [Parameter]
     public EventCallback<ChangeEventArgs> OnVariantSelected { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var firstVariant = Variants.FirstOrDefault().SKUID;
+        OnVariantSelected.InvokeAsync(new ChangeEventArgs(){ Value = firstVariant });
+
+    }
 }

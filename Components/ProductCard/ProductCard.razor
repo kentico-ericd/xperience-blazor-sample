@@ -32,7 +32,7 @@
                         </div>
                     </div>
                     <div class="bbb_deals_item_price ml-auto">
-                        @cartService.FormatPrice(ProductViewModel.Prices.Price, ProductViewModel.Prices.Currency)
+                        @Price
                     </div>
                     <div class="item-list-price ml-auto">
                         @if (ProductViewModel.Prices.Price < ProductViewModel.Prices.ListPrice)
@@ -48,7 +48,11 @@
                     <div class="available">
                         <div class="available_line d-flex flex-row justify-content-start">
                             <div class="available_title">
-                                @if (ProductViewModel.Available)
+                                @if(ProductViewModel.Product.SKU.HasVariants)
+                                {
+                                    <span>Multiple models</span>
+                                }
+                                else if (ProductViewModel.Available)
                                 {
                                     <span>Available: @ProductViewModel.Product.SKU.SKUAvailableItems</span>
                                 }
@@ -68,4 +72,15 @@
 @code {
     [Parameter]
     public ProductViewModel ProductViewModel { get; set; }
+    public string Price {
+        get {
+            if(ProductViewModel.Variants.Count() > 0) {
+                var cheapestVariant = ProductViewModel.Variants.Where(v => v.SKUPrice > 0).Min(v => v.SKUPrice);
+                return $"{cartService.FormatPrice(cheapestVariant, ProductViewModel.Prices.Currency)}";
+            }
+            else {
+                return cartService.FormatPrice(ProductViewModel.Prices.Price, ProductViewModel.Prices.Currency);
+            }
+        }
+    }
 }

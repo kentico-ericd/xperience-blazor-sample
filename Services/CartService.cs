@@ -38,18 +38,17 @@ namespace BlazorApp.Services
             shoppingService.AddItemToCart(new ShoppingCartItemParameters(skuid, 1, parameters));
         }
 
-        public string FormatPrice(decimal price, CurrencyInfo currency)
-        {
-            return String.Format(currency.CurrencyFormatString, price);
-        }
-
-        public string FormatPriceForSelector(decimal price, CurrencyInfo currency)
+        public string FormatPriceForSelector(decimal price, CurrencyInfo currency, bool isVariant)
         {
             if(price > 0) {
-                return $"(+{FormatPrice(price, currency)})";
+                return $"({(isVariant ? "" : "+")}{FormatPrice(price, currency)})";
             }
 
             return "";
+        }
+
+        public string FormatPrice(decimal price, CurrencyInfo currency) {
+            return String.Format(currency.CurrencyFormatString, price);
         }
     }
 }
