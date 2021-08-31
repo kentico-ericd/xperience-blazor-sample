@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using BlazorApp.Models;
 using CMS.Ecommerce;
 using CMS.Helpers;
+using CMS.SiteProvider;
 
 namespace BlazorApp.Services
 {
     public class CartService : ICartService
     {
         private readonly IShoppingService shoppingService;
+        private CustomerInfo mCustomer;
 
         public CartService(IShoppingService shoppingService)
         {
@@ -51,6 +53,32 @@ namespace BlazorApp.Services
         public string FormatPrice(decimal price, CurrencyInfo currency)
         {
             return String.Format(currency.CurrencyFormatString, price);
+        }
+
+        public CustomerInfo GetCurrentCustomer()
+        {
+            if (mCustomer == null)
+            {
+                // Try get from cart
+                mCustomer = shoppingService.GetCurrentCustomer();
+                if (mCustomer == null)
+                {
+                    // Create new customer
+                    CustomerInfo newCustomer = new CustomerInfo
+                    {
+                        CustomerFirstName = "",
+                        CustomerLastName = "",
+                        CustomerEmail = "",
+                        CustomerSiteID = SiteContext.CurrentSiteID
+                    };
+
+
+                    shoppingService.SetCustomer(newCustomer);
+                    mCustomer = newCustomer;
+                }
+            }
+
+            return mCustomer;
         }
     }
 }

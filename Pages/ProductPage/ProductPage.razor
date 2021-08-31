@@ -25,7 +25,7 @@
                 <div class="product-detail-options">
                     <ProductOptionsSelector @ref="selector" ProductViewModel=Model />
                 </div>
-                <button @onclick="AddToCart" class="btn btn-danger mt-3">
+                <button disabled="@AddButtonDisabled()" @onclick="AddToCart" class="btn btn-danger mt-3">
                     <i class="bi bi-cart-fill"></i> Add to cart
                 </button>
             </div>
@@ -53,6 +53,33 @@
                 mProduct = productService.GetViewModel(page);
             }
             return mProduct;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender)
+        {
+            StateHasChanged();
+        }
+    }
+
+    private bool AddButtonDisabled()
+    {
+        if (selector == null)
+        {
+            // For some reason, on first render the selector is not initialized.
+            // Check availability after render
+            return true;
+        }
+        if (selector.SelectedVariant == null)
+        {
+            return !Model.Available;
+        }
+        else
+        {
+            return !selector.SelectedVariant.SKUSellOnlyAvailable || selector.SelectedVariant.SKUAvailableItems > 0;
         }
     }
 

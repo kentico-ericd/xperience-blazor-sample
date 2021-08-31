@@ -1,0 +1,41 @@
+@attribute [Route(Routes.Address)]
+@using BlazorApp.Components.Ecommerce.AddressForm
+@using BlazorApp.Components.Ecommerce.CheckoutStepControl
+@using BlazorApp.Components.Layout.ContentLayout
+@using BlazorApp.Services
+@using CMS.Ecommerce
+@inject IShoppingService shoppingService
+@inject ICartService cartService
+
+<ContentLayout>
+    <div class="col-8">
+        <h1>Billing</h1>
+        <AddressForm OnSubmit="(o,e) => FormSubmitted('b')" Model=billingAddress />
+        <h1 class="mt-5">Shipping</h1>
+        <AddressForm OnSubmit="(o,e) => FormSubmitted('s')" Model=shippingAddress />
+    </div>
+    <CheckoutStepControl NextButtonDisabled="@(!shippingSet || !billingSet)" @ref="stepControl" />
+</ContentLayout>
+
+@code {
+    private CheckoutStepControl stepControl;
+    private AddressInfo billingAddress = new AddressInfo();
+    private AddressInfo shippingAddress = new AddressInfo();
+    private bool billingSet = false, shippingSet = false;
+
+    private void FormSubmitted(char addressType)
+    {
+        if(addressType == 'b')
+        {
+            shoppingService.SetBillingAddress(billingAddress);
+            billingSet = true;
+        }
+        else
+        {
+            shoppingService.SetShippingAddress(shippingAddress);
+            shippingSet = true;
+        }
+
+        StateHasChanged();
+    }
+}
