@@ -49,6 +49,7 @@ namespace BlazorApp
             app.UseSession();
             app.Use(async (ctx, next) => {
                 // Initialize shopping cart during server request
+                // Needed to prevent issues during checkout
                 Service.Resolve<IShoppingService>().GetCurrentShoppingCart();
                 await next();
             });

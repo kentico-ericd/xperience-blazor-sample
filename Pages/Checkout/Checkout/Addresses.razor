@@ -4,38 +4,51 @@
 @using BlazorApp.Components.Layout.ContentLayout
 @using BlazorApp.Services
 @using CMS.Ecommerce
+@using CMS.Helpers
 @inject IShoppingService shoppingService
 @inject ICartService cartService
 
 <ContentLayout>
     <div class="col-8">
         <h1>Billing</h1>
-        <AddressForm OnSubmit="(o,e) => FormSubmitted('b')" Model=billingAddress />
+        <AddressForm @bind-Hide=billingSet Model=billingAddress />
         <h1 class="mt-5">Shipping</h1>
-        <AddressForm OnSubmit="(o,e) => FormSubmitted('s')" Model=shippingAddress />
+        <div class="form-group">
+            <input @onchange="CopyAddressChanged" id="copy-from-billing" class="form-check-input" type="checkbox" />
+            <label for="copy-from-billing" class="form-check-label">
+                Copy from Billing address
+            </label>
+        </div>
+        <AddressForm HideEditButton=copyBilling @bind-Hide=shippingSet Model=shippingAddress />
     </div>
-    <CheckoutStepControl NextButtonDisabled="@(!shippingSet || !billingSet)" @ref="stepControl" />
+    <CheckoutStepControl OnStepForward="OnStepForward" NextButtonDisabled="@(!shippingSet || !billingSet)" @ref="stepControl" />
 </ContentLayout>
 
 @code {
     private CheckoutStepControl stepControl;
     private AddressInfo billingAddress = new AddressInfo();
     private AddressInfo shippingAddress = new AddressInfo();
-    private bool billingSet = false, shippingSet = false;
+    private bool billingSet = false, shippingSet = false, copyBilling = false;
 
-    private void FormSubmitted(char addressType)
+    private void CopyAddressChanged(ChangeEventArgs e)
     {
-        if(addressType == 'b')
+        var isChecked = ValidationHelper.GetBoolean(e.Value, true);
+        shippingSet = isChecked;
+        copyBilling = isChecked;
+        StateHasChanged();
+    }
+
+    private void OnStepForward(object sender, EventArgs e)
+    {
+        if(!shippingSet || !billingSet)
         {
-            shoppingService.SetBillingAddress(billingAddress);
-            billingSet = true;
+            throw new Exception("Either the billing or shipping address was not set successfully.");
         }
         else
         {
-            shoppingService.SetShippingAddress(shippingAddress);
-            shippingSet = true;
+            shoppingService.SetBillingAddress(billingAddress);
+            var shipping = copyBilling ? billingAddress : shippingAddress;
+            shoppingService.SetShippingAddress(shipping);
         }
-
-        StateHasChanged();
     }
 }

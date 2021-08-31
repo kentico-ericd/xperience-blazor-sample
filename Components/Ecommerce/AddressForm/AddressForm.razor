@@ -1,9 +1,13 @@
 @using CMS.Ecommerce
 @using CMS.Globalization
 
-@if(isValid)
+@if(Hide && HideEditButton)
 {
-    <button class="btn btn-danger" @onclick="() => { isValid=false; StateHasChanged(); }">Edit</button>
+
+}
+else if(Hide && !HideEditButton)
+{
+    <button class="btn btn-danger" @onclick="EditButtonClicked">Edit</button>
 }
 else
 {
@@ -41,6 +45,7 @@ else
         <div hidden="@(GetCountryStates(Model.AddressCountryID).Count() == 0)" class="form-group">
             <label for="State">State</label>
             <InputSelect id="State" @bind-Value="Model.AddressStateID" class="form-control col-6">
+                <option value=""></option>
                 @foreach (var state in GetCountryStates(Model.AddressCountryID))
                 {
                     <option value="@state.StateID">@state.StateDisplayName</option>
@@ -54,11 +59,14 @@ else
 @code {
     private IEnumerable<StateInfo> mStates;
     private IEnumerable<CountryInfo> mCountries;
-    public bool isValid = false;
+    [Parameter]
+    public bool Hide { get; set; }
     [Parameter]
     public AddressInfo Model { get; set; }
     [Parameter]
-    public EventHandler OnSubmit { get; set; }
+    public bool HideEditButton { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> HideChanged { get; set; }
     private IEnumerable<CountryInfo> Countries
     {
         get
@@ -84,8 +92,14 @@ else
     }
 
     private void ValidSubmit() {
-        isValid = true;
-        OnSubmit?.Invoke(null, null);
+        Hide = true;
+        HideChanged.InvokeAsync(Hide);
+    }
+
+    private void EditButtonClicked(EventArgs e)
+    {
+        Hide = false;
+        HideChanged.InvokeAsync(Hide);
     }
 
     private void CountryChanged(EventArgs e)
