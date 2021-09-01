@@ -7,8 +7,6 @@ using Kentico.Web.Mvc;
 using Kentico.Content.Web.Mvc;
 using Kentico.PageBuilder.Web.Mvc;
 using BlazorApp.Services;
-using CMS.Core;
-using CMS.Ecommerce;
 
 namespace BlazorApp
 {
@@ -30,7 +28,7 @@ namespace BlazorApp
             services.AddSingleton<ICalculationService, CalculationService>();
             services.AddSingleton<IProductService, ProductService>();
             services.AddSingleton<ISearchService, SearchService>();
-            services.AddSingleton<ICartService, CartService>();
+            services.AddTransient<ICartService, CartService>();
 
             services.AddKentico(features =>
                 features.UsePageBuilder()
@@ -47,12 +45,6 @@ namespace BlazorApp
            
             app.UseStaticFiles();
             app.UseSession();
-            app.Use(async (ctx, next) => {
-                // Initialize shopping cart during server request
-                // Needed to prevent issues during checkout
-                Service.Resolve<IShoppingService>().GetCurrentShoppingCart();
-                await next();
-            });
             /*app.Use(async (ctx, next) => {
                 var pageRetriever = Service.Resolve<IPageRetriever>();
                 var pageDataContextInitializer = Service.Resolve<IPageDataContextInitializer>();

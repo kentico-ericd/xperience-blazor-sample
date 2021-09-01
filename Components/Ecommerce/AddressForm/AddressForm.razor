@@ -34,8 +34,7 @@ else
         </div>
         <div class="form-group">
             <label for="Country">Country</label>
-            <InputSelect required @onselectionchange="CountryChanged" id="Country" @bind-Value="Model.AddressCountryID" class="form-control col-6">
-                <option value=""></option>
+            <InputSelect required @onselectionchange="CountryChanged" id="Country" @bind-Value="Model.AddressCountryID" class="form-control col-6">               
                 @foreach (var country in Countries)
                 {
                     <option value="@country.CountryID">@country.CountryDisplayName</option>
@@ -45,7 +44,7 @@ else
         <div hidden="@(GetCountryStates(Model.AddressCountryID).Count() == 0)" class="form-group">
             <label for="State">State</label>
             <InputSelect id="State" @bind-Value="Model.AddressStateID" class="form-control col-6">
-                <option value=""></option>
+                <option value="0">(select one)</option>
                 @foreach (var state in GetCountryStates(Model.AddressCountryID))
                 {
                     <option value="@state.StateID">@state.StateDisplayName</option>

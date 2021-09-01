@@ -14,7 +14,8 @@ namespace BlazorApp
         public const string CheckoutPrefix = "/Checkout";
         public const string Address = CheckoutPrefix + "/Address";
         public const string Payment = CheckoutPrefix + "/Payment";
-        public static readonly string[] CheckoutProcess = { Address, Payment };
+        public const string Shipping = CheckoutPrefix + "/Shipping";
+        public static readonly string[] CheckoutProcess = { Address, Shipping, Payment };
 
         public static string GetCategoryURL(DepartmentInfo d)
         {

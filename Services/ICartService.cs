@@ -10,5 +10,6 @@ namespace BlazorApp.Services
         public abstract string FormatPrice(decimal price, CurrencyInfo currency);
         public abstract string FormatPriceForSelector(decimal price, CurrencyInfo currency, bool isVariant = false);
         public abstract CustomerInfo GetCurrentCustomer();
+        public abstract IEnumerable<ShippingOptionInfo> GetShippingOptions();
     }
 }

@@ -10,7 +10,6 @@ namespace BlazorApp.Services
     public class CartService : ICartService
     {
         private readonly IShoppingService shoppingService;
-        private CustomerInfo mCustomer;
 
         public CartService(IShoppingService shoppingService)
         {
@@ -57,28 +56,29 @@ namespace BlazorApp.Services
 
         public CustomerInfo GetCurrentCustomer()
         {
-            if (mCustomer == null)
+            // Try get from cart
+            var customer = shoppingService.GetCurrentCustomer();
+            if (customer == null)
             {
-                // Try get from cart
-                mCustomer = shoppingService.GetCurrentCustomer();
-                if (mCustomer == null)
+                // Create new customer
+                CustomerInfo newCustomer = new CustomerInfo
                 {
-                    // Create new customer
-                    CustomerInfo newCustomer = new CustomerInfo
-                    {
-                        CustomerFirstName = "",
-                        CustomerLastName = "",
-                        CustomerEmail = "",
-                        CustomerSiteID = SiteContext.CurrentSiteID
-                    };
+                    CustomerFirstName = "",
+                    CustomerLastName = "",
+                    CustomerEmail = "",
+                    CustomerSiteID = SiteContext.CurrentSiteID
+                };
 
-
-                    shoppingService.SetCustomer(newCustomer);
-                    mCustomer = newCustomer;
-                }
+                shoppingService.SetCustomer(newCustomer);
+                customer = newCustomer;
             }
 
-            return mCustomer;
+            return customer;
+        }
+
+        public IEnumerable<ShippingOptionInfo> GetShippingOptions()
+        {
+            return ShippingOptionInfo.Provider.Get().WhereEquals("ShippingOptionSiteID", SiteContext.CurrentSiteID).TypedResult;
         }
     }
 }

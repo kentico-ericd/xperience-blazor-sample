@@ -20,6 +20,7 @@
 
         if(skuid > 0) {
             cartService.AddToCart(skuid, options);
+            cartService.GetCurrentCustomer();
         }
 
         NavigationManager.NavigateTo(Routes.Cart);
