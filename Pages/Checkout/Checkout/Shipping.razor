@@ -24,10 +24,14 @@
                 </select>
             </div>
         </div>
-        <div class="col-6">
+        <div class="col-6 pt-2">
             <h3>Details</h3>
-            <div>Weight: @cart.TotalItemsWeight</div>
-            <div>Cost: @CartTotal</div>
+            <div><b>Tax</b>: +@cartService.FormatPrice(cart.TotalTax, cart.Currency)</div>
+            <div><b>Shipping</b> (@($"{cart.TotalItemsWeight}lbs")): +@cartService.FormatPrice(cart.TotalShipping, cart.Currency)</div>
+            <div class="cart-total-container mt-2 pt-2 text-left">
+                <span class="mr-2">Total:</span>
+                <span class="h2">@cartService.FormatPrice(cart.GrandTotal, cart.Currency)</span>
+            </div>
         </div>
     </div>
     <CheckoutStepControl />
@@ -35,18 +39,11 @@
 
 @code {
     private ShoppingCartInfo cart;
-    private string CartTotal
-    {
-        get
-        {
-            return cartService.FormatPrice(cart.TotalShipping, cart.Currency);
-        }
-    }
 
     private void ShippingChanged(ChangeEventArgs e)
     {
         var optionID = ValidationHelper.GetInteger(e.Value, 0);
-        if(optionID > 0)
+        if (optionID > 0)
         {
             shoppingService.SetShippingOption(optionID);
             StateHasChanged();

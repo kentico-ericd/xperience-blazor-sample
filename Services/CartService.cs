@@ -78,7 +78,12 @@ namespace BlazorApp.Services
 
         public IEnumerable<ShippingOptionInfo> GetShippingOptions()
         {
-            return ShippingOptionInfo.Provider.Get().WhereEquals("ShippingOptionSiteID", SiteContext.CurrentSiteID).TypedResult;
+            return ShippingOptionInfo.Provider.Get().WhereEquals("ShippingOptionSiteID", SiteContext.CurrentSiteID);
+        }
+
+        public IEnumerable<PaymentOptionInfo> GetPaymentOptions()
+        {
+            return PaymentOptionInfo.Provider.Get().WhereEquals("PaymentOptionSiteID", SiteContext.CurrentSiteID);
         }
     }
 }

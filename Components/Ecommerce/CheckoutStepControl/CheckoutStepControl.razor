@@ -36,6 +36,8 @@
         base.OnInitialized();
         var path = navigationManager.Uri.Replace(navigationManager.BaseUri, "/");
         currentStep = Array.IndexOf(Routes.CheckoutProcess, path);
+
+        cartService.GetCurrentCustomer();
     }
 
     private void SubmitOrder()

@@ -1,10 +1,62 @@
 @attribute [Route(Routes.Payment)]
 @using BlazorApp.Components.Ecommerce.CheckoutStepControl
+@using BlazorApp.Components.Ecommerce.CreditCardForm
 @using BlazorApp.Components.Layout.ContentLayout
 @using BlazorApp.Services
-@inject IProductService productService
+@using CMS.Ecommerce
+@using CMS.Helpers
+@inject IShoppingService shoppingService
+@inject ICartService cartService
 
 <ContentLayout>
     <h1>Payment</h1>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label for="PaymentOption" class="form-check-label">
+                    Payment option
+                </label>
+                <select @onchange="PaymentChanged" id="PaymentOption" class="form-control col-6">
+                    <option value="0">(select one)</option>
+                    @foreach (var pay in cartService.GetPaymentOptions())
+                    {
+                        <option value="@pay.PaymentOptionID">@pay.PaymentOptionDisplayName</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-6 pt-2">
+            @if(showCreditInput)
+            {
+                <CreditCardForm />
+            }
+            <div class="mt-2">
+                You will be charged <span class="h4">@cartService.FormatPrice(cart.GrandTotal, cart.Currency)</span>
+            </div>
+        </div>
+    </div>
     <CheckoutStepControl />
 </ContentLayout>
+
+@code {
+    private ShoppingCartInfo cart;
+    private bool showCreditInput = false;
+
+    private void PaymentChanged(ChangeEventArgs e)
+    {
+        var optionID = ValidationHelper.GetInteger(e.Value, 0);
+        if (optionID > 0)
+        {
+            var option = PaymentOptionInfo.Provider.Get(optionID);
+            showCreditInput = (option.PaymentOptionName == "CreditCard");Console.WriteLine(showCreditInput);
+            shoppingService.SetPaymentOption(optionID);
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        cart = shoppingService.GetCurrentShoppingCart();
+    }
+}

@@ -21,14 +21,30 @@
         </div>
         <AddressForm HideEditButton=copyBilling @bind-Hide=shippingSet Model=shippingAddress />
     </div>
-    <CheckoutStepControl OnStepForward="OnStepForward" NextButtonDisabled="@(!shippingSet || !billingSet)" @ref="stepControl" />
+    <CheckoutStepControl OnStepForward="OnStepForward" NextButtonDisabled="@(!shippingSet || !billingSet)" />
 </ContentLayout>
 
 @code {
-    private CheckoutStepControl stepControl;
+    private ShoppingCartInfo cart;
     private AddressInfo billingAddress = new AddressInfo();
     private AddressInfo shippingAddress = new AddressInfo();
     private bool billingSet = false, shippingSet = false, copyBilling = false;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        cart = shoppingService.GetCurrentShoppingCart();
+
+        // Load addresses from cart if set
+        if(cart.ShoppingCartShippingAddress != null)
+        {
+            shippingAddress = cart.ShoppingCartShippingAddress;
+        }
+        if(cart.ShoppingCartBillingAddress != null)
+        {
+            billingAddress = cart.ShoppingCartBillingAddress;
+        }
+    }
 
     private void CopyAddressChanged(ChangeEventArgs e)
     {
@@ -40,7 +56,7 @@
 
     private void OnStepForward(object sender, EventArgs e)
     {
-        if(!shippingSet || !billingSet)
+        if (!shippingSet || !billingSet)
         {
             throw new Exception("Either the billing or shipping address was not set successfully.");
         }

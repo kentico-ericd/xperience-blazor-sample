@@ -11,5 +11,6 @@ namespace BlazorApp.Services
         public abstract string FormatPriceForSelector(decimal price, CurrencyInfo currency, bool isVariant = false);
         public abstract CustomerInfo GetCurrentCustomer();
         public abstract IEnumerable<ShippingOptionInfo> GetShippingOptions();
+        public abstract IEnumerable<PaymentOptionInfo> GetPaymentOptions();
     }
 }
